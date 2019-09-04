@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from scipy.odr import Model,RealData,ODR
 from matplotlib.ticker import AutoMinorLocator
 
 path = os.path.dirname(os.path.realpath('__file__'))
@@ -26,6 +27,18 @@ plt.rc('font', family='serif')
 
 #%%
 
+def Ajustar(function,x,y,x_err,y_err):
+        # Create a model for fitting.
+    model = Model(function)
+    # Create a RealData object using our initiated data from above.
+    D = RealData(x, y, sx=x_err, sy=y_err)
+    # Set up ODR with the model and data.
+    odr = ODR(D, model, beta0=[0., 1.])
+    # Run the regression.
+    out = odr.run()
+    # Use the in-built pprint method to give us results.
+    out.pprint()
+
 archivos=['ConcentrationTurbidity-OBS'] # Por si queremos agregar más archivos después.
 
 for s in archivos:
@@ -42,9 +55,9 @@ for s in archivos:
     x = np.array(x)
     #x = x[:12,:]   # no tiene sentido seguir haciéndolo, porque  dropna() ya le sacó las nulas.
     
-    x_med=np.zeros(len(x))
-    x_err=np.zeros((2,len(x)))
-    x_err_tot=np.zeros(len(x))
+    x_Hach=np.zeros(len(x))
+    x_Hach_err=np.zeros((2,len(x)))
+    x_Hach_err_tot=np.zeros(len(x))
     
     x_OBS_df = pd.DataFrame(data, columns= ['SS'])
     x_OBS_df = np.array(x_OBS_df)
@@ -52,31 +65,41 @@ for s in archivos:
     
     y_OBS=np.zeros(len(y_df))
     x_OBS=np.zeros(len(y_df))
-    xerr_OBS=10*np.ones(len(x_OBS))
+    x_OBS_err=10*np.ones(len(x_OBS))
     
     y_Hach=[486.0606061, 324.040404, 241.0703812, 158.9673315, 118.9453447, 79.11100286, 0] # A mano. Ya fue.
+    y_Hach_err=np.zeros(len(y_Hach))    # FALTA AGREGAR LOS ERRORES.
     
     for i in range(len(x)):
-       x_med[i]=np.median(x[i])
-       x_err[0,i]=x_med[i] - np.min(x[i])
-       x_err[1,i]=np.max(x[i]) - x_med[i]
-       x_err_tot[i]=x_err[1,i] - x_err[0,i]
-       y_OBS[i]=y_df[i] # Esto parece que no tiene sentido pero es para arreglar la dimensión de y. Size(y_df)=(26,1) y Size(y)=(26,).
+       x_Hach[i]=np.median(x[i])
+       x_Hach_err[0,i]=x_Hach[i] - np.min(x[i])
+       x_Hach_err[1,i]=np.max(x[i]) - x_Hach[i]
+       x_Hach_err_tot[i]=x_Hach_err[1,i] - x_Hach_err[0,i]
+       
+       y_OBS[i]=y_df[i]
        x_OBS[i]= x_OBS_df[i]
        
     # Ajuste:
     
-    def modelo(x, a, b):
+    def lineal_con_offset(x, a, b):
         return a*x+ b
     
-    #parametros_iniciales_Hach  = [0.5,0]
-    #parametros_iniciales_OBS  = [0.5,0]
+    def lineal(x, a):
+        return a*x
     
+    Ajustar(lineal_con_offset(x_Hach),x_Hach,y_Hach,x_Hach_err,y_Hach_err)
+    '''
     popt_Hach, pcov_Hach = curve_fit(modelo, x_med, y_Hach, p0=None)    
     popt_OBS, pcov_OBS = curve_fit(modelo, x_OBS, y_OBS, p0=None)
     
+    popt_Hach_real, pcov_Hach_real = curve_fit(modelo_real, x_med, y_Hach, p0=None)    
+    popt_OBS_real, pcov_OBS_real = curve_fit(modelo_real, x_OBS, y_OBS, p0=None)
+    
     pstd_Hach = np.sqrt(np.diag(pcov_Hach))
     pstd_OBS = np.sqrt(np.diag(pcov_OBS))
+    
+    pstd_Hach_real = np.sqrt(np.diag(pcov_Hach_real))
+    pstd_OBS_real = np.sqrt(np.diag(pcov_OBS_real))
     
     
     nombres_de_param = ['a', 'b']
@@ -89,6 +112,21 @@ for s in archivos:
     for c, v in enumerate(popt_OBS):
         print('%s = %5.4f ± %5.4f' % (nombres_de_param[c], v, pstd_OBS[c]/2))
     
+    nombres_de_param_reales = ['a']
+
+    print('\nResultado del ajuste (Hach):\n')
+    for c, v in enumerate(popt_Hach_real):
+        print('%s = %5.4f ± %5.4f' % (nombres_de_param_reales[c], v, pstd_Hach_real[c]/2))
+    
+    print('\nResultado del ajuste (OBS):\n')
+    for c, v in enumerate(popt_OBS_real):
+        print('%s = %5.4f ± %5.4f' % (nombres_de_param_reales[c], v, pstd_OBS_real[c]/2))
+    '''
+    #####################################
+    # Gráfico del ajuste ax+b:
+    
+    plt.figure()
+    
     plt.errorbar(x_med, y_Hach, xerr=x_err, yerr=None, fmt='o',color='darkred', label=r'Hach', ms=5.5, zorder=0)
     plt.plot(x_med, modelo(x_med, *popt_Hach), color='red', label=r'Ajuste: $y = %.4f \; x + %.4f $'%(popt_Hach[0],popt_Hach[1]), lw=1, zorder=4)
 
@@ -99,12 +137,32 @@ for s in archivos:
     plt.tick_params(axis='both', which='major', labelsize=NumberSize)
     plt.xlabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
     plt.ylabel(r'Concentraci\'on (mg/l)', fontsize=AxisLabelSize)
-    plt.title(r'OBS', fontsize=TitleSize)
+    plt.title(r'Ajuste $y=ax+b$', fontsize=TitleSize)
     plt.legend(loc='best', fontsize=LegendSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
     plt.show()
     plt.savefig(path+'/'+s+'.png')
+    
+    #####################################
+    # Gráfico del ajuste ax:
+    
+    plt.figure()
+    
+    plt.errorbar(x_med, y_Hach, xerr=x_err, yerr=None, fmt='o',color='darkred', label=r'Hach', ms=5.5, zorder=0)
+    plt.plot(x_med, modelo_real(x_med, *popt_Hach_real), color='red', label=r'Ajuste: $y = %.4f \; x$'%(popt_Hach_real[0]), lw=1, zorder=4)
 
+    plt.errorbar(x_OBS, y_OBS, xerr=xerr_OBS, yerr=None, fmt='o', color='darkblue', label=r'OBS', ms=5.5, zorder=0)
+    plt.plot(x_OBS, modelo_real(x_OBS, *popt_OBS_real),  color='blue', label=r'Ajuste: $y = %.4f \; x$'%(popt_OBS_real[0]), lw=1, zorder=4)
+
+
+    plt.tick_params(axis='both', which='major', labelsize=NumberSize)
+    plt.xlabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'Concentraci\'on (mg/l)', fontsize=AxisLabelSize)
+    plt.title(r'Ajuste $y=ax$', fontsize=TitleSize)
+    plt.legend(loc='best', fontsize=LegendSize)
+    plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
+    plt.show()
+    plt.savefig(path+'/'+s+'real.png')
 
 #%% Gráfico
 '''

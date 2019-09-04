@@ -20,7 +20,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=False)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 
