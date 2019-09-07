@@ -31,16 +31,16 @@ archivo = 'ConcentrationTurbidity-OBS'
 FILE=path+'/'+archivo+'.csv'
 data = pd.read_csv(FILE)
 
-x = pd.DataFrame(data, columns= ['Sample 1 (FNU)','Sample 2 (FNU)','Sample 3 (FNU)'])
+x = data[['Sample 1 (FNU)','Sample 2 (FNU)','Sample 3 (FNU)']]
 x = x.dropna(axis=0)
 x = np.array(x)
 
-x_Hach=np.zeros(len(x))
-x_Hach_err=np.zeros((2,len(x)))
-x_Hach_err_tot=np.zeros(len(x))
+x_Hach = np.zeros(len(x))
+x_Hach_err = np.zeros((2,len(x)))
+x_Hach_err_tot = np.zeros(len(x))
 
 y_Hach = np.array([486.0606061, 324.040404, 241.0703812, 158.9673315, 118.9453447, 79.11100286, 0]) # A mano. Ya fue.
-y_Hach_err = 0.04*y_Hach
+y_Hach_err = 0.04*y_Hach # 4% de error.
 
 
 # OBS:
@@ -78,6 +78,7 @@ def lineal(p0,x):
     return a*x
 
 def Ajustar(function,x,y,x_err,y_err):
+    print('Ajuste:\t',function.__name__,'\n')
     # Create a model for fitting.
     model = Model(function)
     # Create a RealData object using our initiated data from above.
@@ -88,12 +89,14 @@ def Ajustar(function,x,y,x_err,y_err):
     out = odr.run()
     # Use the in-built pprint method to give us results.
     out.pprint()
-    
+    print(40*'-')
     return out
 
+print(40*'*'+'\n\t\tHACH\n'+40*'*')
 fit_Hach_offset = Ajustar(lineal_con_offset,x_Hach,y_Hach,x_Hach_err_tot,y_Hach_err)
 fit_OBS_offset = Ajustar(lineal_con_offset,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
 
+print(40*'*'+'\n\t\tOBS\n'+40*'*')
 fit_Hach = Ajustar(lineal,x_Hach,y_Hach,x_Hach_err_tot,y_Hach_err)
 fit_OBS = Ajustar(lineal,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
 
@@ -114,10 +117,10 @@ y_fit_OBS = lineal(fit_OBS.beta, x_fit_OBS)
 # Gráfico del ajuste ax+b:
 plt.figure()
 
-plt.errorbar(x_Hach, y_Hach, xerr=x_Hach_err, yerr=y_Hach_err, fmt='o',color='darkred', label=r'Hach', ms=5.5, zorder=0)
+plt.errorbar(x_Hach, y_Hach, xerr=x_Hach_err, yerr=y_Hach_err, fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
 plt.plot(x_fit_Hach, y_fit_Hach_offset, color='red', label=r'Ajuste: $y = %.4f \; x %.4f $'%(fit_Hach_offset.beta[0],fit_Hach_offset.beta[1]), lw=1, zorder=4)
 
-plt.errorbar(x_OBS, y_OBS, xerr=x_OBS_err, yerr=y_OBS_err, fmt='o', color='darkblue', label=r'OBS', ms=5.5, zorder=0)
+plt.errorbar(x_OBS, y_OBS, xerr=x_OBS_err, yerr=y_OBS_err, fmt='.', color='darkblue', label=r'OBS', ms=5.5, zorder=0)
 plt.plot(x_fit_OBS, y_fit_OBS_offset, color='blue', label=r'Ajuste: $y = %.4f \; x %.4f $'%(fit_OBS_offset.beta[0],fit_OBS_offset.beta[1]), lw=1, zorder=4)
 
 
