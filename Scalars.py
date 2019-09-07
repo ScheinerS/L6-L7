@@ -28,11 +28,11 @@ plt.rc('font', family='serif')
 
 archivo='SCALARS'
 
-FILE=path+'/'+archivo+'.xlsx'
+FILE=path + '/' + archivo + '.xlsx'
 
-data=pd.read_excel(FILE,header=0)
-data = data.rename(columns=data.iloc[0])
-data = data.drop(0)
+data = pd.read_excel(FILE,header=0)
+#data = data.rename(columns=data.iloc[0])
+#data = data.drop(0)
 
 hach = data['HACH_Mean']
 hach_err = data['HACH_Mean']*data['HACH_CV']/100
@@ -43,6 +43,10 @@ ss_err = data['SS_OBS501_Mean']*data['SS_OBS501_CV']/100
 
 spm = data['SPM_Mean']
 spm_err = data['SPM_CV']*data['SPM_Mean']/100
+
+#%%
+
+# Gráfico de Hach vs OBS.
 
 plt.figure()
 
@@ -57,6 +61,8 @@ plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
 plt.show()
 
 #%%
+
+# Gráfico de Turbidez vs Concentración.
 
 plt.figure()
 
