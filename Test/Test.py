@@ -24,77 +24,56 @@ plt.close('all')
 plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
-
 #%%
 
-archivo = 'ConcentrationTurbidity-OBS'
+lugares = ['In Situ','Laboratorio']
+experimentos = ['hach','ss','spm']
 
-FILE=path+'/'+archivo+'.csv'
-data = pd.read_csv(FILE)
+data = {}
 
-x = data[['Sample 1 (FNU)','Sample 2 (FNU)','Sample 3 (FNU)']]
-x = x.dropna(axis=0)
-x = np.array(x)
+for lugar in lugares:
 
-x_Hach = np.zeros(len(x))
-x_Hach_err = np.zeros((2,len(x)))
-x_Hach_err_tot = np.zeros(len(x))
+    data[lugar] = pd.read_excel(path + '/' + lugar + '.xlsx',header=0)
+    #data = data.rename(columns=data.iloc[0])
+    #data = data.drop(0)
+    
+    hach = data[lugar]['HACH_Mean']
+    hach_err = data[lugar]['HACH_Mean']*data[lugar]['HACH_CV']/100
+    # hach_err = data['HACH_Mean']
+    
+    ss = data[lugar]['SS_OBS501_Mean']
+    ss_err = data[lugar]['SS_OBS501_Mean']*data[lugar]['SS_OBS501_CV']/100
+    
+    spm = data[lugar]['SPM_Mean']
+    spm_err = data[lugar]['SPM_CV']*data[lugar]['SPM_Mean']/100
 
-y_Hach = np.array([486.0606061, 324.040404, 241.0703812, 158.9673315, 118.9453447, 79.11100286, 0]) # A mano. Ya fue.
-y_Hach_err = 0.04*y_Hach # 4% de error.
 
-
-# OBS:
-
-x_OBS = data['SS']
-x_OBS = x_OBS.dropna()
-x_OBS = np.array(x_OBS)
-
-y_OBS = data['Concentración']
-y_OBS = y_OBS.dropna(axis=0)
-y_OBS = np.array(y_OBS)
-
-x_OBS_err = 10*np.ones(len(x_OBS))
-y_OBS_err = 0.04*y_OBS
-
-# Para que no haya ceros en el vector de errores.
-y_Hach_err[-1] = 0.01
-y_OBS_err[-1] = 0.01
 #%%
-for i in range(len(x)):
-   x_Hach[i]=np.median(x[i])
-   x_Hach_err[0,i]=x_Hach[i] - np.min(x[i])
-   x_Hach_err[1,i]=np.max(x[i]) - x_Hach[i]
-   x_Hach_err_tot[i]=x_Hach_err[0,i] + x_Hach_err[1,i]
-
-
+   
 # Generamos los datos aleatorios:
 
+N = 10000 # Cantidad de datos generados.
 
-x_Hach_nuevo = np.zeros(len(x_Hach))
-y_Hach_nuevo = np.zeros(len(y_Hach))
-
-x_OBS_nuevo = np.zeros(len(x_OBS))
-y_OBS_nuevo = np.zeros(len(y_OBS))
-
-
-N = 100000 # Cantidad de datos generados.
-
-m_Hach = np.zeros(N)
-m_OBS = np.zeros(N)
-
-for j in range(N):
-    for i in range(len(x_Hach_nuevo)):
-        x_Hach_nuevo[i] = x_Hach[i] - x_Hach_err[0,i] + x_Hach_err_tot[i]*np.random.rand()
-        y_Hach_nuevo[i] = y_Hach[i] - y_Hach_err[i]*(np.random.rand()-0.5)
-    for i in range(len(x_OBS_nuevo)):
-        x_OBS_nuevo[i] = x_OBS[i] - x_OBS_err[i]*(np.random.rand()-0.5)
-        y_OBS_nuevo[i] = y_OBS[i] - y_OBS_err[i]*(np.random.rand()-0.5)
+#for j in range(N):
     
-    # Ajuste de los datos generados:
+
     
-    m_Hach[j] = np.dot(x_Hach_nuevo,y_Hach_nuevo)/np.dot(x_Hach_nuevo,x_Hach_nuevo)
-    m_OBS[j] = np.dot(x_OBS_nuevo,y_OBS_nuevo)/np.dot(x_OBS_nuevo,x_OBS_nuevo)
+    
+    
+    
+    hach_nuevo = np.zeros(len(hach))
+    ss_nuevo = np.zeros(len(ss))
+    
+    
+
+
+
+
+    
+# Ajuste de los datos generados:
+
+m_Hach[j] = np.dot(x_Hach_nuevo,y_Hach_nuevo)/np.dot(x_Hach_nuevo,x_Hach_nuevo)
+m_OBS[j] = np.dot(x_OBS_nuevo,y_OBS_nuevo)/np.dot(x_OBS_nuevo,x_OBS_nuevo)
     
     
 plt.figure()

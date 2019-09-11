@@ -20,13 +20,14 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 
 #%%
 
-archivo='SCALARS'
+archivos = 'SCALARS'
+
 
 FILE=path + '/' + archivo + '.xlsx'
 

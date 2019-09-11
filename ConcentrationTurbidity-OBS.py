@@ -21,7 +21,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 #%%
@@ -99,6 +99,16 @@ fit_OBS_offset = Ajustar(lineal_con_offset,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
 print(40*'*'+'\n\t\tOBS\n'+40*'*')
 fit_Hach = Ajustar(lineal,x_Hach,y_Hach,x_Hach_err_tot,y_Hach_err)
 fit_OBS = Ajustar(lineal,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
+
+#%%
+
+# Guardamos los datos en un NPZ:
+
+
+
+
+
+
 
 #%%
 
