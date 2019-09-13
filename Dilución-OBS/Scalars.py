@@ -26,10 +26,10 @@ plt.rc('font', family='serif')
 
 #%%
 
-archivos = 'SCALARS'
+archivo = 'SCALARS'
 
 
-FILE=path + '/' + archivo + '.xlsx'
+FILE = path + '/' + archivo + '.xlsx'
 
 data = pd.read_excel(FILE,header=0)
 #data = data.rename(columns=data.iloc[0])

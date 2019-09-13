@@ -26,7 +26,7 @@ plt.rc('font', family='serif')
 
 #%%
 
-archivo = 'ConcentrationTurbidity-OBS'
+archivo = 'Dilucion-OBS'
 
 FILE=path+'/'+archivo+'.csv'
 data = pd.read_csv(FILE)
