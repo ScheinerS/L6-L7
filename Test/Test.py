@@ -55,73 +55,94 @@ for lugar in lugares:
 
 # Generamos los datos aleatorios:
 
-N = 100 # Cantidad de datos generados.
+N = 500 # Cantidad de datos generados.
 
 datos_nuevos = {}   # Diccionario auxiliar, análogo al otro, pero en el que generamos los datos de forma aleatoria.
 
-Pendientes = []
-
-for j in range(N):
-    Pendientes.append({})  # Diccionario al que se accede igual que en los otros, pero que solo guarda las pendientes.
-
-    for lugar in lugares:
-        datos_nuevos[lugar] = {}
+Pendientes = {}
+ 
+for lugar in lugares:
+    
+    datos_nuevos[lugar] = {}
+    
         
+    # Si queremos graficar los valores aleatorios:
+    GraficarErrores = False
+
+    if GraficarErrores:
+        # Hacemos un gráfico de los errores para corroborar si se generan como buscamos:
+        plt.errorbar(datos[lugar]['hach'], datos[lugar]['ss'], xerr=datos[lugar]['hach_err'], yerr=datos[lugar]['ss_err'], fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
+        plt.plot(datos_nuevos[lugar]['hach'],datos_nuevos[lugar]['ss'],'.')
+        plt.xlabel(r'hach', fontsize=AxisLabelSize)
+        plt.ylabel(r'ss', fontsize=AxisLabelSize)
+        plt.title(r'%d puntos generados'%(N), fontsize=TitleSize)
+        #plt.legend(loc='best', fontsize=LegendSize)
+        plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
+        plt.show()
+    
+    # Ajuste de los datos generados:
+    
+    Pendientes[lugar] = {}
+    Pendientes[lugar]['hach'] = {}
+    Pendientes[lugar]['ss'] = {}
+    
+    Pendientes[lugar]['hach']['ss'] = []    # lista de las N pendientes de x='hach' e y='ss'
+    Pendientes[lugar]['hach']['spm'] = []
+    Pendientes[lugar]['ss']['spm'] = []
+    
+    def Ajuste(x,y):
+        # 'x' e 'y' son los strings: 'hach','ss','spm'.
+        nominador   = (datos_nuevos[lugar][x]*datos_nuevos[lugar][y]).sum(skipna=True)
+        denominador = (datos_nuevos[lugar][x]*datos_nuevos[lugar][x]).sum(skipna=True)
+        return nominador/denominador
+    
+    # Para cada combinación, 
+    for j in range(N):
+        # Simulamos los puntos:
         datos_nuevos[lugar]['hach'] = datos[lugar]['hach'] + 2*datos[lugar]['hach_err']*(np.random.rand(len(datos[lugar]['hach']))-0.5)
         datos_nuevos[lugar]['ss'] = datos[lugar]['ss'] + 2*datos[lugar]['ss_err']*(np.random.rand(len(datos[lugar]['ss']))-0.5)
         datos_nuevos[lugar]['spm'] = datos[lugar]['spm'] + 2*datos[lugar]['spm_err']*(np.random.rand(len(datos[lugar]['spm']))-0.5)
+
+        # Los guardamos en 'Pendientes':
+        Pendientes[lugar]['hach']['ss'].append(Ajuste('hach','ss'))     # se agrega el ajuste j-ésimo.
+        Pendientes[lugar]['hach']['spm'].append(Ajuste('hach','spm'))
+        Pendientes[lugar]['ss']['spm'].append(Ajuste('ss','spm'))
         
-        # Si queremos graficar los valores aleatorios:
-        GraficarErrores = False
-    
-        if GraficarErrores:
-            # Hacemos un gráfico de los errores para corroborar si se generan como buscamos:
-            plt.errorbar(datos[lugar]['hach'], datos[lugar]['ss'], xerr=datos[lugar]['hach_err'], yerr=datos[lugar]['ss_err'], fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
-            plt.plot(datos_nuevos[lugar]['hach'],datos_nuevos[lugar]['ss'],'.')
-            plt.xlabel(r'hach', fontsize=AxisLabelSize)
-            plt.ylabel(r'ss', fontsize=AxisLabelSize)
-            plt.title(r'%d puntos generados'%(N), fontsize=TitleSize)
-            #plt.legend(loc='best', fontsize=LegendSize)
-            plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
-            plt.show()
         
-        # Ajuste de los datos generados:
-        
-        Pendientes[j][lugar] = {}
-        Pendientes[j][lugar]['hach'] = {}
-        Pendientes[j][lugar]['ss'] = {}
-        
-        Pendientes[j][lugar]['hach']['ss'] = (datos_nuevos[lugar]['hach']*datos_nuevos[lugar]['ss']).sum(skipna=True)/(datos_nuevos[lugar]['hach']*datos_nuevos[lugar]['hach']).sum(skipna=True)
-        Pendientes[j][lugar]['hach']['spm'] = (datos_nuevos[lugar]['hach']*datos_nuevos[lugar]['spm']).sum(skipna=True)/(datos_nuevos[lugar]['hach']*datos_nuevos[lugar]['hach']).sum(skipna=True)
-        aa=Pendientes[j][lugar]['ss']['spm'] = (datos_nuevos[lugar]['ss']*datos_nuevos[lugar]['spm']).sum(skipna=True)/(datos_nuevos[lugar]['ss']*datos_nuevos[lugar]['ss']).sum(skipna=True)
-        
-        # CORROBORAR QUE ESTÉ BIEN HECHA ESA CUENTA.
+        # Graficamos uno, para ver si vamos bien:    
         if lugar=='In Situ':
-            plt.plot(j,Pendientes[j][lugar]['ss']['spm'],'.',color='blue',label=lugar)
+            plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='blue',label=lugar)
         else:
-            plt.plot(j,Pendientes[j][lugar]['ss']['spm'],'.',color='red',label=lugar)
-        
+            plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='red',label=lugar)
+       
+
+plt.axhline(y=0.7536,color='red',label='Datos reales (Laboratorio)')
+#plt.axhline(y=0)
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Cantidad de simulaciones: N = %d'%(N), fontsize=TitleSize)
-#plt.xlabel(r'número de la simulación', fontsize=AxisLabelSize)
-#plt.ylabel(r'Pendiente', fontsize=AxisLabelSize)
-
+plt.xlabel(r'N\'umero de la simulaci\'on', fontsize=AxisLabelSize)
+plt.ylabel(r'Pendiente', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.savefig(path + '/Simulaciones.png')
 
 
 
 # La cuenta que hay que hacer es:      
 # m= np.dot(x,y)/np.dot(x,x)
 
-
+'''
 ##################
 # FALTA VER QUE LAS DISTRIBUCIONES SON GAUSSIANAS.
 
+print(Pendientes['Laboratorio']['hach']['ss'])
 
+alfa = [1,1,1,2,1,2,2,1,2,1,3,3,4,1,2,5,2,1,4,2,3,1,1]
 
-
-
-
+plt.figure()
+for i in range(len(alfa)):
+    plt.hist(alfa[i])
+'''
 
 #%%
 
