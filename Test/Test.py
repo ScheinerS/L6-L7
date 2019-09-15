@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-
+Test estadístico: In Situ - Laboratorio.
 """
 
 import sys
@@ -27,7 +27,6 @@ plt.rc('font', family='serif')
 #%%
 
 lugares = ['In Situ','Laboratorio']
-experimentos = ['hach','ss','spm']
 
 data = {}   # Diccionario de DataFrames con los datos de cada lugar: IS y LAB.
 datos = {}  # Diccionario de Series con los valores para generar los datos
@@ -55,7 +54,7 @@ for lugar in lugares:
 
 # Generamos los datos aleatorios:
 
-N = 500 # Cantidad de datos generados.
+N = 5000 # Cantidad de datos generados.
 
 datos_nuevos = {}   # Diccionario auxiliar, análogo al otro, pero en el que generamos los datos de forma aleatoria.
 
@@ -127,81 +126,53 @@ plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.savefig(path + '/Simulaciones.png')
 
 
+# Corroborar.
 
 # La cuenta que hay que hacer es:      
-# m= np.dot(x,y)/np.dot(x,x)
+# m = np.dot(x,y)/np.dot(x,x)
 
-'''
-##################
 # FALTA VER QUE LAS DISTRIBUCIONES SON GAUSSIANAS.
 
-print(Pendientes['Laboratorio']['hach']['ss'])
-
-alfa = [1,1,1,2,1,2,2,1,2,1,3,3,4,1,2,5,2,1,4,2,3,1,1]
-
-plt.figure()
-for i in range(len(alfa)):
-    plt.hist(alfa[i])
-'''
+#print(Pendientes['Laboratorio']['hach']['ss'])
 
 #%%
 
+# TEST:
+experimentos = {0:'hach', 1:'ss', 2:'spm'}
+
+for i in range(3):
+    for j in range(i+1,3):
+        print(experimentos[i],experimentos[j])
+        
+        LAB = Pendientes['Laboratorio'][experimentos[i]][experimentos[j]]
+        IS = Pendientes['In Situ'][experimentos[i]][experimentos[j]]
+
+        # Gráfico:
+        
+        plt.figure()
+        
+        plt.hist(LAB, bins = int(np.sqrt(N)), label='Laboratorio', color = 'red')
+        plt.hist(IS, bins = int(np.sqrt(N)), label='In Situ', color = 'blue')
+        
+        plt.xlabel(r'm', fontsize=AxisLabelSize)
+        plt.ylabel(r'', fontsize=AxisLabelSize)
+        plt.title(r'Pendiente: %s - %s [N = %d]'%(experimentos[i],experimentos[j],N), fontsize=TitleSize)
+        plt.legend(loc='best', fontsize=LegendSize)
+        plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
+        plt.show()
+
+        plt.savefig(path + '/Simulación: %s - %s [N = %d].png'%(experimentos[i],experimentos[j],N))
+
+
 '''
 
-for lugar in lugares:
-    plt.figure()
+Cosas que faltaría hacer para terminar esta parte del trabajo:
     
-    plt.hist(m_Hach,bins = int(np.sqrt(N)),label='Hach',color = 'red')
-    plt.hist(m_OBS,bins = int(np.sqrt(N)),label='OBS',color = 'blue')
+    - Eliminar los outliers y ajustar para corroborar que los seis valores de m simulados éstén dentro de lo esperado.
+    
+    - SI TIENE SENTIDO, corroborar que las distribuciones sean normales.
+    
+    - 
+    
 
-
-plt.xlabel(r'm', fontsize=AxisLabelSize)
-plt.ylabel(r'', fontsize=AxisLabelSize)
-plt.title(r'N = %d'%(N), fontsize=TitleSize)
-plt.legend(loc='best', fontsize=LegendSize)
-plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
-plt.show()
-
-
-
-'''
-
-
-
-
-
-
-
-
-
-#%%
-'''
-plt.figure()
-plt.errorbar(x_Hach, y_Hach, xerr=x_Hach_err, yerr=y_Hach_err, fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
-plt.plot(x_Hach_nuevo,y_Hach_nuevo,'.')
-
-plt.figure()
-plt.errorbar(x_OBS, y_OBS, xerr=x_OBS_err, yerr=y_OBS_err, fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
-plt.plot(x_OBS_nuevo,y_OBS_nuevo,'.')
-
-
-# Gráfico del ajuste ax:
-
-plt.figure()
-
-plt.errorbar(x_Hach, y_Hach, xerr=x_Hach_err, yerr=y_Hach_err, fmt='.',color='darkred', label=r'Hach', ms=5.5, zorder=0)
-plt.plot(x_fit_Hach, y_fit_Hach, color='red', label=r'Ajuste: $y = %.4f \; x$'%(fit_Hach.beta[0]), lw=1, zorder=4)
-
-plt.errorbar(x_OBS, y_OBS, xerr=x_OBS_err, yerr=y_OBS_err, fmt='.', color='darkblue', label=r'OBS', ms=5.5, zorder=0)
-plt.plot(x_fit_OBS, y_fit_OBS, color='blue', label=r'Ajuste: $y = %.4f \; x$'%(fit_OBS.beta[0]), lw=1, zorder=4)
-
-
-plt.tick_params(axis='both', which='major', labelsize=NumberSize)
-plt.xlabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
-plt.ylabel(r'Concentraci\'on (mg/l)', fontsize=AxisLabelSize)
-plt.title(r'Ajuste $y=ax$', fontsize=TitleSize)
-plt.legend(loc='best', fontsize=LegendSize)
-plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
-plt.show()
-plt.savefig(path + '/' + archivo + 'real.png')
 '''
