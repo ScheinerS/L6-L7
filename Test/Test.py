@@ -21,7 +21,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 #%%
@@ -40,6 +40,8 @@ for lugar in lugares:
     #data = data.rename(columns=data.iloc[0])
     #data = data.drop(0)
     
+    
+    
     datos[lugar]['hach'] = data[lugar]['HACH_Mean']
     datos[lugar]['hach_err'] = data[lugar]['HACH_Mean']*data[lugar]['HACH_CV']/100
     
@@ -54,7 +56,7 @@ for lugar in lugares:
 
 # Generamos los datos aleatorios:
 
-N = 5000 # Cantidad de datos generados.
+N = 1000 # Cantidad de datos generados.
 
 datos_nuevos = {}   # Diccionario auxiliar, análogo al otro, pero en el que generamos los datos de forma aleatoria.
 
@@ -85,14 +87,17 @@ for lugar in lugares:
     Pendientes[lugar]['hach'] = {}
     Pendientes[lugar]['ss'] = {}
     
+#    Pendientes[lugar]['hach' + '_' + 'ss'] = []
+    
     Pendientes[lugar]['hach']['ss'] = []    # lista de las N pendientes de x='hach' e y='ss'
     Pendientes[lugar]['hach']['spm'] = []
     Pendientes[lugar]['ss']['spm'] = []
     
     def Ajuste(x,y):
+        cond = (~ datos_nuevos[lugar][x].isna()) & (~ datos_nuevos[lugar][y].isna())
         # 'x' e 'y' son los strings: 'hach','ss','spm'.
-        nominador   = (datos_nuevos[lugar][x]*datos_nuevos[lugar][y]).sum(skipna=True)
-        denominador = (datos_nuevos[lugar][x]*datos_nuevos[lugar][x]).sum(skipna=True)
+        nominador   = (datos_nuevos[lugar][x].loc[cond]*datos_nuevos[lugar][y].loc[cond]).sum(skipna=True)
+        denominador = (datos_nuevos[lugar][x].loc[cond]*datos_nuevos[lugar][x].loc[cond]).sum(skipna=True)
         return nominador/denominador
     
     # Para cada combinación, 
@@ -106,8 +111,7 @@ for lugar in lugares:
         Pendientes[lugar]['hach']['ss'].append(Ajuste('hach','ss'))     # se agrega el ajuste j-ésimo.
         Pendientes[lugar]['hach']['spm'].append(Ajuste('hach','spm'))
         Pendientes[lugar]['ss']['spm'].append(Ajuste('ss','spm'))
-        
-        
+               
         # Graficamos uno, para ver si vamos bien:    
         if lugar=='In Situ':
             plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='blue',label=lugar)
