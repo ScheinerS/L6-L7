@@ -21,7 +21,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=False)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 #%%
@@ -56,7 +56,7 @@ for lugar in lugares:
 
 # Generamos los datos aleatorios:
 
-N = 1000 # Cantidad de datos generados.
+N = 10000 # Cantidad de datos generados.
 
 datos_nuevos = {}   # Diccionario auxiliar, análogo al otro, pero en el que generamos los datos de forma aleatoria.
 
@@ -112,12 +112,12 @@ for lugar in lugares:
         Pendientes[lugar]['hach']['spm'].append(Ajuste('hach','spm'))
         Pendientes[lugar]['ss']['spm'].append(Ajuste('ss','spm'))
                
-        # Graficamos uno, para ver si vamos bien:    
+        '''# Graficamos uno, para ver si vamos bien:    
         if lugar=='In Situ':
             plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='blue',label=lugar)
         else:
             plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='red',label=lugar)
-       
+       '''
 
 plt.axhline(y=0.7536,color='red',label='Datos reales (Laboratorio)')
 #plt.axhline(y=0)
@@ -141,6 +141,7 @@ plt.savefig(path + '/Simulaciones.png')
 
 #%%
 
+
 # TEST:
 experimentos = {0:'hach', 1:'ss', 2:'spm'}
 
@@ -158,11 +159,13 @@ for i in range(3):
         plt.hist(LAB, bins = int(np.sqrt(N)), label='Laboratorio', color = 'red')
         plt.hist(IS, bins = int(np.sqrt(N)), label='In Situ', color = 'blue')
         
+        plt.xlim(0,1.2)
+        
         plt.xlabel(r'm', fontsize=AxisLabelSize)
         plt.ylabel(r'', fontsize=AxisLabelSize)
         plt.title(r'Pendiente: %s - %s [N = %d]'%(experimentos[i],experimentos[j],N), fontsize=TitleSize)
         plt.legend(loc='best', fontsize=LegendSize)
-        plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
+        plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
         plt.show()
 
         plt.savefig(path + '/Simulación: %s - %s [N = %d].png'%(experimentos[i],experimentos[j],N))
