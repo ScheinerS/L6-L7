@@ -112,14 +112,14 @@ for lugar in lugares:
         Pendientes[lugar]['hach']['spm'].append(Ajuste('hach','spm'))
         Pendientes[lugar]['ss']['spm'].append(Ajuste('ss','spm'))
                
-        '''# Graficamos uno, para ver si vamos bien:    
+        # Graficamos uno, para ver si vamos bien:    
         if lugar=='In Situ':
             plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='blue',label=lugar)
         else:
             plt.plot(j,Pendientes[lugar]['ss']['spm'][j],'.',color='red',label=lugar)
-       '''
+       
 
-plt.axhline(y=0.7536,color='red',label='Datos reales (Laboratorio)')
+#plt.axhline(y=0.7536,color='red',label='Datos reales (Laboratorio)')
 #plt.axhline(y=0)
 
 plt.legend(loc='best', fontsize=LegendSize)
