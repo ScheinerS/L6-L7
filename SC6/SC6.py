@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Test estadístico: In Situ - Laboratorio.
+Este programa lee los archivos del SC6 de tipo: 'LOG_XXXX.TXT' y los exporta con los mismos nombres e formato .CSV, en la misma carpeta.
+
+Última actualización: 25/09/2019.
 """
 
 import sys
@@ -8,6 +10,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import glob
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
@@ -24,16 +27,17 @@ plt.rc('font', family='serif')
 
 #%%
 
-N_LOG = 2   # Cantidad de archivos que se quieren leer.
+files = glob.glob(path + '/' + 'LOG_*.TXT') # Identifica la cantidad de archivos que se quieren leer.
 
 data = {}   # Diccionario con los DataFrames de cada archivo. 
 
-for i in range(1,N_LOG+1):
+for file in files:
     
-    FILE = path + '/' + 'LOG_%04d.TXT'%(i)
-    filename = 'LOG_%04d'%i
-        
-    data[filename] = pd.read_csv(FILE, delimiter=",", skiprows=18)
+    filename = file.split('\\')[-1]
+    filename = filename.split('.')[0]
+
+    data[filename] = pd.read_csv(file, delimiter=",", skiprows=18)
     data[filename] = data[filename].dropna()    # Eliminamos la línea de puntos del principio.
 
+    data[filename].to_csv(path + '/' + filename + '.CSV')
 #%%
