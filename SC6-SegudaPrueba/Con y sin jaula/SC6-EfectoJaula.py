@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Comparación con y sin la jaula.
-
 """
 
 import sys
@@ -34,7 +33,7 @@ data = {}   # Diccionario con los DataFrames de cada archivo.
 
 for file in files:
     
-    filename = file.split('\\')[-1]
+    filename = file.split('/')[-1]  # En Windows: '\\'
     filename = filename.split('.')[0]
 
     data[filename] = pd.read_csv(file, delimiter=",", skiprows=18)
@@ -46,14 +45,11 @@ for file in files:
 
 #%%
 
-# Gráfico del aparato en aire, luego sumergido hasta el fondo, y finalmente sumergido en superficie:
-
-#time = data['LOG_0028']['hh:mm:ss.sss']
 signalCJ = []
 signalSJ = []
 
 long = [415.1, 560.7, 634.9, 659.6, 731.9, 850.0]
-color = ['purple', 'green', 'orangered', 'red', 'lightcoral','silver']
+color = ['purple', 'green', 'orange', 'red', 'lightcoral','silver']
 
 for i in range(6):
     SIG = 'Sig[' + str(i) + ']'
@@ -61,14 +57,14 @@ for i in range(6):
     signalSJ.append(data['LOG_0051'][SIG])  # sin la jaula
     
     plt.figure()
-    plt.hist(signalCJ[i], label = 'Con jaula', bins=int(np.sqrt(len(signalCJ[i]))))
-    plt.hist(signalSJ[i], label = 'Sin jaula', bins=int(np.sqrt(len(signalSJ[i]))))
-
+    plt.hist(signalSJ[i], label = 'Sin jaula', alpha = 0.8, bins=int(np.sqrt(len(signalSJ[i]))))
+    plt.hist(signalCJ[i], label = 'Con jaula',alpha = 0.8, bins=int(np.sqrt(len(signalCJ[i]))))
+    
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'Efecto de la jaula (agua clara) [%s nm]'%(long[i]), fontsize=TitleSize)
     plt.xlabel(r'Signal', fontsize=AxisLabelSize)
     plt.ylabel(r'', fontsize=AxisLabelSize)
-    #plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+    plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.savefig(path + '/EfectoDelBorde[%s nm].png'%(long[i]))
     #plt.pause(0.5)
     plt.show()
