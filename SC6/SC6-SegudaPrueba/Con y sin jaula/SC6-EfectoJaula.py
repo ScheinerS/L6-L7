@@ -20,7 +20,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=False)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 #%%
@@ -61,7 +61,7 @@ for i in range(6):
     plt.hist(signalCJ[i], label = 'Con jaula',alpha = 0.8, bins=int(np.sqrt(len(signalCJ[i]))))
     
     plt.legend(loc='best', fontsize=LegendSize)
-    plt.title(r'Efecto de la jaula (agua clara) [%s nm]'%(long[i]), fontsize=TitleSize)
+    plt.title(r'Efecto de la jaula (agua clara) [$\lambda$ = %s nm]'%(long[i]), fontsize=TitleSize)
     plt.xlabel(r'Signal', fontsize=AxisLabelSize)
     plt.ylabel(r'', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
