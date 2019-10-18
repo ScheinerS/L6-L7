@@ -1,0 +1,38 @@
+mvs 1
+mvs 0
+mvs 1
+mvs 0
+
+Ser FLNTUSB-5890
+Ver FLNTU 4.08
+Ave 30
+Pkt 0
+Set 0
+Rec 1
+Int 00:00:00
+Dat 10/18/19
+Clk 11:41:06
+Mem 27
+
+Ser FLNTUSB-5890
+Ver FLNTU 4.08
+Ave 30
+Pkt 0
+Set 0
+Rec 1
+Int 00:00:00
+Dat 10/18/19
+Clk 11:41:10
+Mem 27
+
+Ser FLNTUSB-5890
+Ver FLNTU 4.08
+Ave 30
+Pkt 0
+Set 0
+Rec 1
+Int 00:00:00
+Dat 10/18/19
+Clk 11:41:17
+Mem 27
+unrecognized command
