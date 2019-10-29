@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import glob
 from scipy.optimize import curve_fit
-
+#from scipy.odr import Model,RealData,ODR
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
@@ -24,7 +24,7 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 #%%
@@ -97,15 +97,28 @@ for file in files:
 
 # Ajuste:
 
-x = tabla['hach']
-y = tabla['ntu']
+# De la hoja de caracterización del FLNTU:
 
-def modelo(x, a, b):
-        return a*x+ b
-                                                                    
+DC = 50 # counts
+SF = 0.2438 # NTU/counts
+
+
+x = tabla['hach']
+y = SF * (tabla['ntu'] - DC)
+
+#x = list(x)
+#y = list(y)
+
+x_err = tabla['hach_err']
+y_err = SF*tabla['ntu_err']
+
+
+def lineal(x, a):
+    return a*x 
+
 parametros_iniciales  = [0.5,0]
 
-popt, pcov = curve_fit(modelo, x, y, p0=None)    
+popt, pcov = curve_fit(lineal, x, y, p0=None)
 
 pstd = np.sqrt(np.diag(pcov))
 nombres_de_param = ['a', 'b']
@@ -120,9 +133,10 @@ for c, v in enumerate(popt):
 
 plt.figure()
 
-plt.errorbar(tabla['hach'],tabla['ntu'], xerr=tabla['hach_err'], yerr=tabla['hach_err'], fmt='.',color='darkred', label=r'', ms=5.5, zorder=0)
+plt.errorbar(x,y, xerr=x_err, yerr=y_err, fmt='.',color='darkred', label=r'', ms=5.5, zorder=0)
 
-plt.plot(x, modelo(x, *popt), 'r-', label=r'Ajuste: $y = %.4f \; x + %.4f $'%(popt[0],popt[1]))#, lw=2.5, zorder=4)
+plt.plot(x, lineal(x, *popt), 'r-', label=r'Ajuste: $y = %.4f \; x $'%(popt[0]))
+
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Correlaci\'on Hach-FLNTU', fontsize=TitleSize)
