@@ -21,7 +21,10 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=False)
+if os.name == 'posix':   # Si es Linux.
+    Linux = True
+
+plt.rc('text', usetex=Linux)    # Solo usa Latex si es Linux.
 plt.rc('font', family='serif')
 
 #%%
@@ -102,16 +105,6 @@ fit_OBS = Ajustar(lineal,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
 
 #%%
 
-# Guardamos los datos en un NPZ:
-
-
-
-
-
-
-
-#%%
-
 # Vectores para graficar los ajustes:
 
 x_fit_Hach = np.linspace(x_Hach[0], x_Hach[-1], 1000)
@@ -141,7 +134,8 @@ plt.title(r'Ajuste $y=ax+b$', fontsize=TitleSize)
 plt.legend(loc='best', fontsize=LegendSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
 plt.show()
-plt.savefig(path + '/' + archivo + '.png')
+if Linux:
+    plt.savefig(path + '/' + archivo + '.png')
 
 #####################################
 # Gráfico del ajuste ax:
@@ -162,4 +156,6 @@ plt.title(r'Ajuste $y=ax$', fontsize=TitleSize)
 plt.legend(loc='best', fontsize=LegendSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.1)
 plt.show()
-plt.savefig(path + '/' + archivo + 'real.png')
+
+if Linux: # Solo guarda la imagen en Linux.
+    plt.savefig(path + '/' + archivo + 'real.png')
