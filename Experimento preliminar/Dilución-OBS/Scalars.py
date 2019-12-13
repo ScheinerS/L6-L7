@@ -20,7 +20,10 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=False)
+if os.name == 'posix':   # Si es Linux.
+    Linux = True
+
+plt.rc('text', usetex=Linux)    # Solo usa Latex si es Linux.
 plt.rc('font', family='serif')
 
 

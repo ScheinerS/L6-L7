@@ -21,7 +21,10 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+if os.name == 'posix':   # Si es Linux.
+    Linux = True
+
+plt.rc('text', usetex=Linux)    # Solo usa Latex si es Linux.
 plt.rc('font', family='serif')
 
 #%%
@@ -127,7 +130,9 @@ plt.title(r'Cantidad de simulaciones: N = %d'%(N), fontsize=TitleSize)
 plt.xlabel(r'N\'umero de la simulaci\'on', fontsize=AxisLabelSize)
 plt.ylabel(r'Pendiente', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
-plt.savefig(path + '/Simulaciones.png')
+
+if Linux:
+    plt.savefig(path + '/Simulaciones.png')
 
 
 # Corroborar.
@@ -167,8 +172,9 @@ for i in range(3):
         plt.legend(loc='best', fontsize=LegendSize)
         plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
         plt.show()
-
-        plt.savefig(path + '/Simulación: %s - %s [N = %d].png'%(experimentos[i],experimentos[j],N))
+        
+        if Linux:
+            plt.savefig(path + '/Simulación: %s - %s [N = %d].png'%(experimentos[i],experimentos[j],N))
 
 
 '''

@@ -24,7 +24,10 @@ NumberSize=10
 
 plt.close('all')
 
-plt.rc('text', usetex=True)
+if os.name == 'posix':   # Si es Linux.
+    Linux = True
+
+plt.rc('text', usetex=Linux)    # Solo usa Latex si es Linux.
 plt.rc('font', family='serif')
 
 #%%
@@ -143,5 +146,7 @@ plt.title(r'Correlaci\'on Hach-FLNTU', fontsize=TitleSize)
 plt.xlabel(r'Hach (NTU)', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO FLNTU (NTU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
-plt.savefig(path + '/Hach-FLNTU.png')
 plt.show()
+
+if Linux:
+    plt.savefig(path + '/Hach-FLNTU.png')
