@@ -6,9 +6,7 @@ Corrector de errores de transferencia del ECO FLNTU.
 
 Para hacer más adelante:
     
-    Asumimos que no se repiten los datos con error en dos transferencias separadas, pero podría ocurrir. El próximo paso sería hacerlo con tres transferencias diferentes.
-
-Última actualización: 18/12/2019.
+    Hasta ahora, asumimos que no se repiten los datos con error en dos transferencias separadas, pero podría ocurrir. El próximo paso sería hacerlo con tres transferencias diferentes.
 """
 
 import sys
@@ -42,6 +40,17 @@ except:
 data[fileA] = data[fileA].dropna()
 data[fileB] = data[fileB].dropna()
 
+# Nombramos las columnas relevantes de los archivos:
+
+for f in [fileA, fileB]:
+    
+    data[f].rename(columns={0: 'date', 1: 'time', 3: 'ntu_counts', 5: 'fl_counts'}, inplace=True)
+
+# Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.   
+
+
+# No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
+
 #%%
 
 def check_date(date):
@@ -67,7 +76,6 @@ def check_date(date):
         else:
             return False
     else:
-        print('\nError de lectura\n')
         return False
     
 #######################
@@ -93,7 +101,6 @@ def check_time(time):
         else:
             return False
     else:
-        print('\nError de lectura\n')
         return False
    
 #######################
@@ -107,23 +114,25 @@ def check_counts(counts):
     if counts>0 and counts<4131:
         return True
     else:
-        print('\nError de lectura\n')
         return False
-    
+
+#######################
+
 def check_all(L):
     # esta función verifica todas las columnas para la línea L
-    date = L[0]
-    time = L[1]
+   
+    a = check_date(L['date'])
+    b = check_time(L['time'])
+    c = check_counts(L['ntu_counts'])
+    d = check_counts(L['fl_counts'])
     
-    ntu_counts = L[3]
-    fl_counts = L[5]
+    # Chequeamos que las otras columnas también sean enteros acotados entre 0 y 4130, para detectar otros errores:
     
-    a = check_date(date)
-    b = check_time(time)
-    c = check_counts(ntu_counts)
-    d = check_counts(fl_counts)
+    e = check_counts(L[2])
+    f = check_counts(L[4])
+    g = check_counts(L[6])
     
-    if a and b and c and d:
+    if a and b and c and d and e and f and g:
         return True
     else:
         return False
@@ -132,26 +141,39 @@ def check_all(L):
 
 # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
 
-file = pd.DataFrame()
+file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
 
-for i in range(10): #range(len(data[fileA])):
+replaced = 0
+errors_A_and_B = 0
+
+for i in range(len(data[fileA])):
+    # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
+    DATE = data[fileA].iloc[i]['date']
+    TIME = data[fileA].iloc[i]['time']
     
     L = data[fileA].iloc[i]
+    
     if check_all(L):
-        file.append(data[fileA].iloc[i])
-        print('A')
+        file = file.append(L, ignore_index=True)
         
     else:
-        L = data[fileB].iloc[i]
+        # buscamos la fila equivalente en el archivo B (el índice en A y B podría no coincidir, porque eliminamos las líneas dañadas de cada archivo):
+        #L = data[fileB].loc[(data[fileB]['date'] == DATE) & (data[fileB]['time'] == TIME)]
+        L = data[fileB].loc[(data[fileB]['time'] == TIME)]
         if check_all(L):
-            file.append(data[fileB].iloc[i])
+            file = file.append(L, ignore_index=True)
+            replaced = replaced + 1
         else:
-            print('El dato está dañado en ambos archivos.')
+            errors_A_and_B = errors_A_and_B + 1
 
-print(file)
+#print(file)
 
+print('Líneas dañadas reemplazadas:', replaced)
+print('No pudieron reemplazarse:', errors_A_and_B)
 
-# ARREGLAR. EL ARCHIVO 'file' NO SE ARMA.
+#%%
+
+file.to_csv('output.csv')   # Cambiar el nombre
 
 #%%
 # De la hoja de caracterización del FLNTU:

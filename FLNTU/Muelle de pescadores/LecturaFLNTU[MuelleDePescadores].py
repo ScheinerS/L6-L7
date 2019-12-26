@@ -14,6 +14,7 @@ import matplotlib.dates as md
 import dateutil
 #import glob
 
+# Ver https://matplotlib.org/3.1.1/gallery/text_labels_and_annotations/date.html
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
