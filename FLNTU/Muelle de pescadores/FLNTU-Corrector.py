@@ -25,11 +25,18 @@ sys.path.append(path)
 
 #%%
 
+filename = 'RDP_20191217'
+
+Save_Excel = True # Para guardar en formato '.xlsx'
+Save_CSV = False # Para guardar en formato '.csv'
+
+#%%
+
 data = {}   # Diccionario con los DataFrames de cada archivo. 
 
 # Lectura de los archivos del FLNTU:
-fileA = path + '/' + 'RDP_20191217.xlsx'
-fileB = path + '/' + 'RDP_20191217(transferenciaB).xlsx'
+fileA = path + '/' + filename + '(transferenciaA).xlsx'
+fileB = path + '/' + filename + '(transferenciaB).xlsx'
 
 try:
     data[fileA] = pd.read_excel(fileA, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
@@ -46,7 +53,7 @@ for f in [fileA, fileB]:
     
     data[f].rename(columns={0: 'date', 1: 'time', 3: 'ntu_counts', 5: 'fl_counts'}, inplace=True)
 
-# Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.   
+# Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.
 
 
 # No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
@@ -173,16 +180,8 @@ print('No pudieron reemplazarse:', errors_A_and_B)
 
 #%%
 
-file.to_csv('output.csv')   # Cambiar el nombre
+if Save_Excel:
+    file.to_excel(filename + '.xlsx')
 
-#%%
-# De la hoja de caracterización del FLNTU:
-
-DC = 50 # counts
-SF = 0.2438 # NTU/counts
-
-'''
-x = tabla['hach']
-y = SF * (tabla['ntu'] - DC)
-'''
-#%%
+if Save_CSV:
+    file.to_csv(filename + '.csv')

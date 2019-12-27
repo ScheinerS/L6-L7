@@ -1,1 +1,0 @@
-Los dos archivos que están en esta carpeta con los mismos datos, pero transfrencias diferentes, para evitar los errores de transferencia.

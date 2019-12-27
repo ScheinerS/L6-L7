@@ -42,47 +42,47 @@ plt.rc('font', family='serif')
 
 #%%
 
-file = path + '/' + 'RDP_20191217.xlsx'
+filename = 'RDP_20191217'
 
-data = pd.read_excel(file,
-                     delimiter="\t",
-                     skiprows=1,
-                     header=None,usecols=range(0,7),
-                     #names = ['date', 'time', '', 'ntu', '','fl',''],
-                     #dtype={'date': str, 'time': str, 'ntu': int , 'fl': int},
-                     #errors='coerce'
-                     )
+file = path + '/' + filename + '.xlsx'
 
-data = data.dropna()
+data = pd.read_excel(file)
 
-i=0
+#%%
+# De la hoja de caracterización del FLNTU:
 
-while i<len(data):
-    L = data.iloc[i]
-    if not ((type(L[0]) == type(L[1]) == str) and (type(L[2]) == type(L[3]) == type(L[4]) == type(L[5]) == type(L[6]) == int)):
-        print('Error de formato:\t',i)
-        #data.drop([i], axis = 0, inplace = True)
-        data.drop(data.index[i],inplace=True)
-    else:
-            # Y a veces, se pegan dos enteros y aparecen números enormes:
-        if (not 0<L[3]<4131) or (not 0<L[5]<4131):
-            print('Error de límite:\t',i)
-            data.drop(data.index[i],inplace=True)
-            # ESTA PARTE NO PARECE ESTAR FUNCIONANDO...
-        else:
-            i=i+1
+DC = 50 # counts
+SF_NTU = 0.2438 # NTU/counts
+SF_FL = 0.0607 # CHL/counts
+
+ntu = SF_NTU * (data['ntu_counts'] - DC)
+fl = SF_FL * (data['fl_counts'] - DC)
+
+#%%
+###########################################
+# Este bloque es para graficar en función del tiempo, pero no funciona bien y lo dejé. Creo que va a ser mejor integrarlo a la base de datos directamente y graficar desde ahí, pero eso quedará para más adelante.
+###########################################
+
+timestrings = data['time']
+
+times = [dateutil.parser.parse(s) for s in timestrings]
 
 
-time = data[1][:]
-ntu = data[3][:]
-fl = data[5][:]
+
 
 #%%
 # Gráfico:
 
 plt.figure()
 
-plt.plot(ntu, color='orange', label=r'NTU')
+plt.xticks( rotation= 00 )
+#xfmt = md.DateFormatter('%H:%M:%S')
+#ax=plt.gca()
+#ax.xaxis.set_major_formatter(xfmt)
+
+
+
+plt.plot( ntu, color='orange', label=r'NTU')
 plt.plot(fl, color='green', label=r'FL')
 
 plt.legend(loc='best', fontsize=LegendSize)
@@ -94,3 +94,4 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/ECO FLNTU.png')
+
