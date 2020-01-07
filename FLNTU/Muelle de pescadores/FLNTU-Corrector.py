@@ -158,20 +158,30 @@ for i in range(len(data[fileA])):
     DATE = data[fileA].iloc[i]['date']
     TIME = data[fileA].iloc[i]['time']
     
-    L = data[fileA].iloc[i]
+    L_A = data[fileA].iloc[i]
     
-    if check_all(L):
-        file = file.append(L, ignore_index=True)
-        
+    if check_all(L_A):
+        file = file.append(L_A, ignore_index=True)
+        #print(L)
     else:
         # buscamos la fila equivalente en el archivo B (el índice en A y B podría no coincidir, porque eliminamos las líneas dañadas de cada archivo):
         #L = data[fileB].loc[(data[fileB]['date'] == DATE) & (data[fileB]['time'] == TIME)]
-        L = data[fileB].loc[(data[fileB]['time'] == TIME)]
-        if check_all(L):
-            file = file.append(L, ignore_index=True)
+        '''
+        % Esto es una prueba que muestra que la línea (errónea en fileA y buena en fileB) da 'False' cuando se le aplica check_all, y debería reemplazarla. Todas las funciones que componen check_all dan False, así que hay algo mal en el formato. L_A y L_B son diferentes y deberían ser iguales. Series y DataFrame. ¿?¿?¿?¿?
+        
+        TIME = '12:42:06'
+        L_a = data[fileA].loc[(data[fileA]['time'] == TIME)]
+        L_b = data[fileB].loc[(data[fileB]['time'] == TIME)]
+        '''
+        L_B = data[fileB].loc[(data[fileB]['time'] == TIME)]
+        
+        if check_all(L_B):  # ESTO NO ESTÁ ANDANDO. Da falso para renglones que están sanos.
+            file = file.append(L_B, ignore_index=True)
             replaced = replaced + 1
         else:
             errors_A_and_B = errors_A_and_B + 1
+            print('L_A:\t', L_A)
+            print('L_B:\t', L_B)
 
 #print(file)
 
