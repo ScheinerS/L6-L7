@@ -1,7 +1,17 @@
-def campbellContinuous2Stations(campaign0,path0):
-#    path0 = '/home/gossn/Dropbox/Documents/inSitu/Database'
-#    campaign0 = 'BALakes_20161215_Junin'
+# IMPORTO LIBRERÍAS PARA QUE FUNCIONE TODO. DESPUÉS HAY QUE SACARLAS:
 
+import os
+import pandas as pd
+import openpyxl
+import numpy as np
+
+path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
+campaign0 = 'RdP_20191217_Muelle'
+
+#%%
+
+def ECO2Stations(campaign0,path0):
+    
     pathRegions   = path0 + '/regions'
 
     region = campaign0.split('_')[0]
@@ -9,30 +19,30 @@ def campbellContinuous2Stations(campaign0,path0):
     campaign = region + '_' + date
     pathCampaign  = pathRegions + '/' + region + '/' +  campaign0
     
-    print('Processing Campbell data for campaign: ' + campaign0)
+    print('Processing ECO data for campaign: ' + campaign0)
     
     inputs = {}
     try:
-        with open(pathCampaign + '/campbellContinuous/campbellContinuousProcessingInputs') as f0:
+        with open(pathCampaign + '/ECO_FLNTU/ECO_FLNTUProcessingInputs') as f0:
             for line in f0:
                (key, val) = line.split()
                inputs[key] = val.split(',')
                if len(inputs[key])==1:
                    inputs[key] = inputs[key][0]
     except:
-        print('No Campbell Input file or no Campbell measurements for this campaign!')
+        print('No ECO Input file or no ECO measurements for this campaign!')
         return
-        
-    if not os.path.isdir(pathCampaign + '/campbellProcessed/'):
-        os.mkdir(pathCampaign + '/campbellProcessed/')
+    if not os.path.isdir(pathCampaign + '/ECO_FLNTUProcessed/'):
+        os.mkdir(pathCampaign + '/ECO_FLNTUProcessed/')
+    
     # OBS Processing
     
-    if not os.path.isdir(pathCampaign + '/campbellContinuous'):
-        print("No OBS data available for this campaign!")
+    if not os.path.isdir(pathCampaign + '/ECO_FLNTU'):
+        print("No ECO data available for this campaign!")
     else:
         # Append sheet to Excel logsheet with Campbell Sci. continuous measurements...
-        filenameCs = os.listdir(pathCampaign + '/campbellContinuous')
-        filenameCs.remove('campbellContinuousProcessingInputs')
+        filenameCs = os.listdir(pathCampaign + '/ECO_FLNTU')
+        filenameCs.remove('ECO_FLNTUProcessingInputs')
         
         # Read station IDs and Times
         stationInfo = pd.DataFrame()
@@ -46,7 +56,7 @@ def campbellContinuous2Stations(campaign0,path0):
         stationTimes = stationInfo['timeStampUTC'].asobject
     
     
-        pathXlsx = pathCampaign + '/campbellProcessed/' + campaign + '_Campbell.xlsx'
+        pathXlsx = pathCampaign + '/ECO_FLNTUProcessed/' + campaign + '_ECO-FLNTU.xlsx'
         wb = openpyxl.Workbook()
         wb.save(pathXlsx)
         writer = pd.ExcelWriter(pathXlsx, engine = 'openpyxl')
@@ -68,7 +78,7 @@ def campbellContinuous2Stations(campaign0,path0):
         for file in filenameCs:
             
             csCont = pd.DataFrame()
-            csCont = pd.read_csv(pathCampaign + '/campbellContinuous' + '/' + file, header = [1,2])
+            csCont = pd.read_csv(pathCampaign + '/ECO_FLNTU' + '/' + file, header = [1,2])
     
             # Change column names
             colNamesOld = list(csCont.columns)
@@ -207,3 +217,9 @@ def campbellContinuous2Stations(campaign0,path0):
             #adjustColWidth(wb.get_sheet_by_name(sheetname))
             writer.save()
             writer.close()
+
+#%%
+
+# CORRO LA FUNCIÓN. BORRAR ESTE BLOQUE CUANDO ESTÉ TERMINADO.
+
+ECO2Stations(campaign0,path0)

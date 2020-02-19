@@ -2,11 +2,11 @@
 """
 Corrector de errores de transferencia del ECO FLNTU.
 
-    Este programa lee dos archivos del FLNTU correspondientes a la misma campaña (i.e. idénticos, pero transferidos por separado) y los compara, en búsqueda de errores. Cuando una fila no tiene el formato que se espera (siete columnas), la elimina y toma el dato del otro archivo.
+    Este programa lee dos archivos del FLNTU correspondientes a la misma campaña (i.e. idénticos, pero transferidos por separado) y los compara, en búsqueda de errores. Cuando una fila no tiene el formato que se espera (siete columnas, cada una con el formato esperado), la elimina y toma el dato del otro archivo.
 
 Para hacer más adelante:
     
-    Hasta ahora, asumimos que no se repiten los datos con error en dos transferencias separadas, pero podría ocurrir. El próximo paso sería hacerlo con tres transferencias diferentes.
+    Hasta ahora, asumimos que no se repiten los datos con error en dos transferencias separadas, pero podría ocurrir. El próximo paso sería hacerlo con tres o más transferencias diferentes.
 """
 
 import sys
