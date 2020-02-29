@@ -1,12 +1,18 @@
 # IMPORTO LIBRERÍAS PARA QUE FUNCIONE TODO. DESPUÉS HAY QUE SACARLAS:
 
 import os
+import sys
 import pandas as pd
 import openpyxl
 import numpy as np
 
-path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
+# path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
+
+path0 = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(path0)
+
 campaign0 = 'RdP_20191217_Muelle'
+
 
 #%%
 
