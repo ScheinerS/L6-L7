@@ -16,9 +16,10 @@ campaign0 = 'RdP_20191217_Muelle'
 
 
 #%%
-
-def ECO2Stations(campaign0,path0):
     
+    #def ECO2Stations(campaign0,path0):
+    campaign0 = 'RdP_20191217_Muelle' 
+
     pathRegions   = path0 + '/regions'
 
     region = campaign0.split('_')[0]
@@ -38,7 +39,7 @@ def ECO2Stations(campaign0,path0):
                    inputs[key] = inputs[key][0]
     except:
         print('No ECO Input file or no ECO measurements for this campaign!')
-        return
+        #return
     if not os.path.isdir(pathCampaign + '/ECO_FLNTUProcessed/'):
         os.mkdir(pathCampaign + '/ECO_FLNTUProcessed/')
     
