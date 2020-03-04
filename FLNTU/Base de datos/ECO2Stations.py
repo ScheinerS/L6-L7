@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 import openpyxl
 import numpy as np
+from datetime import timedelta
 
 # path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
 
@@ -187,32 +188,6 @@ def ECO2Stations(campaign0,path0):
                 writer.save()
                 writer.close()
 
-
-        ##### GLOBAL VARIABLES: compute
-        globalVars = ['BS_OBS501_','SS_OBS501_']
-        globVar = {}
-        for var in globalVars:
-            colsDf  = [c for c in csStations[stat].columns if c.startswith(var)]
-            unitsDf = '[' + colsDf[0].split('[')[1]
-            # Compute MU
-            globVar['Mean'] = csStations['Mean'][colsDf].mean(axis=1)
-            # Compute composite STD asumming equal weights: n1=n2=...
-            # sigma**2 = 0.5*(sigma1**2 + sigma2**2 + ... + mu1**2 + mu2**2 + ... -N*muGlobal**2)
-            N = csStations['Mean'][colsDf].notnull().sum(axis=1)
-            globVar['Std'] = pd.Series(index=stationIDs)
-            for col in colsDf:
-                globVar['Std'] = globVar['Std'].add(csStations['Mean'][col]**2,fill_value=0)
-                globVar['Std'] = globVar['Std'].add(csStations['Std'][col]**2,fill_value=0)
-            globVar['Std'] = globVar['Std'].add(-N*(globVar['Mean']**2),fill_value=0)
-            globVar['Std'] = (globVar['Std']/N)**0.5
-            # Compute CV
-            globVar['CV'] = 100*globVar['Std']/globVar['Mean']
-            # append computed global variables to csStations
-            for stat in ['Mean','Std','CV']:
-                csStations[stat][var + 'Global' + unitsDf] = globVar[stat]
-
-            var = 'BS_OBS501'  
-            csStations['Mean'][[c for c in csStations[stat].columns if c.startswith(var)]]
 
         for stat in ['Mean','Std','CV']:
             csStations[stat] = csStations[stat].reindex(columns=sorted(csStations[stat].columns))
