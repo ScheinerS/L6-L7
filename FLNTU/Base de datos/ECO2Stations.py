@@ -7,6 +7,7 @@ import openpyxl
 import numpy as np
 from datetime import timedelta
 
+
 # path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
 
 path0 = os.path.dirname(os.path.realpath('__file__'))
@@ -16,8 +17,15 @@ campaign0 = 'RdP_20191217_Muelle'
 
 
 #%%
-    
-    #def ECO2Stations(campaign0,path0):
+
+# Eliminamos las líneas con errores:
+# pongo esto acá porque necesito el path0. Necesito pasarle el path0 al archivo y no entiendo cómo...
+
+import ECO_Corrector.py as corr
+
+# Hay armar una función que corra todo dentro de ECO_Corrector y va a haber que pasarle los directorios como string.
+
+def ECO2Stations(campaign0,path0):
     campaign0 = 'RdP_20191217_Muelle' 
 
     pathRegions   = path0 + '/regions'
