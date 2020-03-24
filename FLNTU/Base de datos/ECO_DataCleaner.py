@@ -18,44 +18,13 @@ import matplotlib.pyplot as plt
 #from scipy.optimize import curve_fit
 #from scipy.odr import Model,RealData,ODR
 
-path0 = os.path.dirname(os.path.realpath('__file__'))
-sys.path.append(path0)
+path = os.path.dirname(os.path.realpath('__file__'))
+sys.path.append(path)
 
 
 #%%
 
-filename = 'RDP_20191217'
 
-Save_Excel = True # Para guardar en formato '.xlsx'
-Save_CSV = False # Para guardar en formato '.csv'
-
-#%%
-
-data = {}   # Diccionario con los DataFrames de cada archivo. 
-
-# Lectura de los archivos del FLNTU:
-fileA = path + '/' + filename + '.raw'
-#fileB = path + '/' + filename + '(1).raw'
-
-try:
-    data[fileA] = pd.read_excel(fileA, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
-    #data[fileB] = pd.read_excel(fileB, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
-except:
-    print('\nError de lectura\n')
-    
-data[fileA] = data[fileA].dropna()
-#data[fileB] = data[fileB].dropna()
-
-# Nombramos las columnas relevantes de los archivos:
-
-for f in [fileA]:#, fileB]:
-    
-    data[f].rename(columns={0: 'date', 1: 'time', 3: 'ntu_counts', 5: 'fl_counts'}, inplace=True)
-
-# Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.
-
-
-# No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
 
 #%%
 
@@ -145,54 +114,69 @@ def check_all(L):
 
 #%%
 
-# Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
+def clean(pathCampaign):
+    
+    print('Cleaning ECO file...')
+    
+    filename = 'RdP_20191217'
 
-file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
+    Save_Excel = True # Para guardar en formato '.xlsx'
+    Save_CSV = False # Para guardar en formato '.csv'
+    
+    data = {}   # Diccionario con los DataFrames de cada archivo. 
+    
+    # Lectura de los archivos del FLNTU:
+    fileA = pathCampaign + '/ECO_FLNTU/' + filename + '.raw'
+    #fileB = pathCampaign + '/ECO_FLNTU/' + filename + '(1).raw'
+    
+    try:
+        data[fileA] = pd.read_csv(fileA, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))    # lee el formato '.raw' como '.csv' sin problemas.
+        
+        #data[fileB] = pd.read_csv(fileB, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
+    except:
+        print('\nError de lectura\n')
+        
+    data[fileA] = data[fileA].dropna()
+    #data[fileB] = data[fileB].dropna()
+    
+    # Nombramos las columnas relevantes de los archivos:
+    
+    for f in [fileA]:#, fileB]:
+        
+        data[f].rename(columns={
+                0: 'date',
+                1: 'time',
+                3: 'ntu_counts',
+                5: 'fl_counts'
+                }, inplace=True)
+    
+    # Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.
+    
+    
+    # No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
 
-replaced = 0
-errors_A_and_B = 0
+    # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
+    
+    file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
+    
 
-def main(file):
     for i in range(len(data[fileA])):
         # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
-        DATE = data[fileA].iloc[i]['date']
-        TIME = data[fileA].iloc[i]['time']
+        #DATE = data[fileA].iloc[i]['date']
+        #TIME = data[fileA].iloc[i]['time']
         
         L_A = data[fileA].iloc[i]
         
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
             #print(L)
-        '''
-        else:
-            # buscamos la fila equivalente en el archivo B (el índice en A y B podría no coincidir, porque eliminamos las líneas dañadas de cada archivo):
-            #L = data[fileB].loc[(data[fileB]['date'] == DATE) & (data[fileB]['time'] == TIME)]
-            
-            # Esto es una prueba que muestra que la línea (errónea en fileA y buena en fileB) da 'False' cuando se le aplica check_all, y debería reemplazarla. Todas las funciones que componen check_all dan False, así que hay algo mal en el formato. L_A y L_B son diferentes y deberían ser iguales. Series y DataFrame. ¿?¿?¿?¿?
-            
-            TIME = '12:42:06'
-            L_a = data[fileA].loc[(data[fileA]['time'] == TIME)]
-            L_b = data[fileB].loc[(data[fileB]['time'] == TIME)]
-            
-            L_B = data[fileB].loc[(data[fileB]['time'] == TIME)]
-            
-            if check_all(L_B):  # ESTO NO ESTÁ ANDANDO. Da falso para renglones que están sanos.
-                file = file.append(L_B, ignore_index=True)
-                replaced = replaced + 1
-            else:
-                errors_A_and_B = errors_A_and_B + 1
-                print('L_A:\t', L_A)
-                print('L_B:\t', L_B)
-    
-    #print(file)
-    
-    print('Líneas dañadas reemplazadas:', replaced)
-    print('No pudieron reemplazarse:', errors_A_and_B)
-'''
-#%%
 
     if Save_Excel:
-        file.to_excel(filename + '.xlsx')
+        print('Saving as "%s"'%(filename + '.xlsx'))
+        file.to_excel(pathCampaign + '/ECO_FLNTU/' + filename + '.xlsx')
 
     if Save_CSV:
-        file.to_csv(filename + '.csv')
+        print('Saving as "%s"'%(filename + '.csv'))
+        file.to_csv(pathCampaign + '/ECO_FLNTU/' + filename + '.csv')
+
+clean(pathCampaign)

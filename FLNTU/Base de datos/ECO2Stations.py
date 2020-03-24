@@ -7,6 +7,8 @@ import openpyxl
 import numpy as np
 from datetime import timedelta
 
+# Importo el módulo que armamos:
+import ECO_DataCleaner as DC
 
 # path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
 
@@ -18,15 +20,7 @@ campaign0 = 'RdP_20191217_Muelle'
 
 #%%
 
-# Eliminamos las líneas con errores:
-# pongo esto acá porque necesito el path0. Necesito pasarle el path0 al archivo y no entiendo cómo...
-
-import ECO_Corrector.py as corr
-
-# Hay armar una función que corra todo dentro de ECO_Corrector y va a haber que pasarle los directorios como string.
-
 def ECO2Stations(campaign0,path0):
-    campaign0 = 'RdP_20191217_Muelle' 
 
     pathRegions   = path0 + '/regions'
 
@@ -34,6 +28,9 @@ def ECO2Stations(campaign0,path0):
     date   = campaign0.split('_')[1]
     campaign = region + '_' + date
     pathCampaign  = pathRegions + '/' + region + '/' +  campaign0
+    
+    
+    DC.clean(pathCampaign) # Lo pongo acá por el momento, pero iría dentro del 'try', me parece.
     
     print('Processing ECO data for campaign: ' + campaign0)
     
@@ -47,7 +44,7 @@ def ECO2Stations(campaign0,path0):
                    inputs[key] = inputs[key][0]
     except:
         print('No ECO Input file or no ECO measurements for this campaign!')
-        #return
+        return
     if not os.path.isdir(pathCampaign + '/ECO_FLNTUProcessed/'):
         os.mkdir(pathCampaign + '/ECO_FLNTUProcessed/')
     
