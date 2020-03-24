@@ -179,4 +179,4 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + filename + '.csv')
 
-clean(pathCampaign)
+#clean(pathCampaign)

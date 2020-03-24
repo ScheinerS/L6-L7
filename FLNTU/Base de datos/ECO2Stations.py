@@ -28,9 +28,7 @@ def ECO2Stations(campaign0,path0):
     date   = campaign0.split('_')[1]
     campaign = region + '_' + date
     pathCampaign  = pathRegions + '/' + region + '/' +  campaign0
-    
-    
-    DC.clean(pathCampaign) # Lo pongo acá por el momento, pero iría dentro del 'try', me parece.
+
     
     print('Processing ECO data for campaign: ' + campaign0)
     
@@ -42,6 +40,9 @@ def ECO2Stations(campaign0,path0):
                inputs[key] = val.split(',')
                if len(inputs[key])==1:
                    inputs[key] = inputs[key][0]
+        
+        # Limpiamos el archivo del ECO:
+        DC.clean(pathCampaign)
     except:
         print('No ECO Input file or no ECO measurements for this campaign!')
         return
@@ -59,7 +60,7 @@ def ECO2Stations(campaign0,path0):
         
         # Read station IDs and Times
         stationInfo = pd.DataFrame()
-        stationInfo = pd.read_excel(pathCampaign + '/' + campaign + '.xlsx',sheet_name='stationInfo',skiprows=1)
+        stationInfo = pd.read_excel(pathCampaign + '/ECO_FLNTU/' + campaign + '.xlsx',sheet_name='stationInfo',skiprows=1)
     
         # Remendar bug openpyxl (borra formatos preestablecidos)
         stationInfo['startTimeUTC'] = pd.to_datetime(stationInfo['startTimeUTC'],format= '%H:%M:%S' )
