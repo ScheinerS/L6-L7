@@ -1,0 +1,13 @@
+deltaUTC            0
+lambdaMin           350
+lambdaMax           950
+dLambda             2.5
+EdTiltThresh        8
+QCRhowStd750Thresh  0.01
+glintCorrectWave    -1
+EdSensor            84d4
+LseSensor           84C6
+LskySensor          84E1
+TiltSensor          c0de
+recalFactorFile     Trios_IAFE_Recalibration_factor_Original_2015.txt
+SatelliteSensors    MA,MT,ME,MSI,OLI,OLCI,PHR1B,VIIRS

@@ -1,0 +1,88 @@
+Log for campaign: RdP_20191210
+
+Processing PC in timezone: 0 UTC
+
+Trios wavelength vector: 350:2.5:950nm
+
+Ed tilt threshold set to: 8 degrees
+
+QC check: RhowStd(750)<0.01
+
+No glint correction applied!
+
+Ed Sensor code: 84d4
+
+Lse Sensor code: 84C6
+
+Lsky Sensor code: 84E1
+
+Ed tilt Sensor code: c0de
+
+Recalibration factors found in : /home/gossn/Dropbox/Documents/inSitu/Database/scripts/TriOS/Trios_criteria/Trios_IAFE_Recalibration_factor_Original_2015.txt
+
+Compute reflectances for bands in sensors: MA, MT, ME, MSI, OLI, OLCI, PHR1B, VIIRS, 
+
+
+Processing station "ST01" ( 1 out of 9)
+# Scans Ed: 55
+# Scans Lse: 55
+# Scans Lsky: 55
+# Scans Tilt: 55
+# Simultaneous scans: 55
+
+Processing station "ST02" ( 2 out of 9)
+# Scans Ed: 65
+# Scans Lse: 65
+# Scans Lsky: 65
+# Scans Tilt: 97
+# Simultaneous scans: 65
+Non-simultaneous Tilt scans: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+
+Processing station "ST03" ( 3 out of 9)
+# Scans Ed: 60
+# Scans Lse: 59
+# Scans Lsky: 59
+# Scans Tilt: 60
+# Simultaneous scans: 59
+Non-simultaneous Ed scans: [0]
+Non-simultaneous Tilt scans: [59]
+
+Processing station "ST03B" ( 4 out of 9)
+No TriOS measurement for "ST03B"
+
+Processing station "ST04" ( 5 out of 9)
+# Scans Ed: 65
+# Scans Lse: 58
+# Scans Lsky: 65
+# Scans Tilt: 65
+# Simultaneous scans: 58
+Non-simultaneous Ed scans: [54, 55, 56, 57, 58, 59, 60]
+Non-simultaneous Lsky scans: [54, 55, 56, 57, 58, 59, 60]
+Non-simultaneous Tilt scans: [54, 55, 56, 57, 58, 59, 60]
+
+Processing station "ST05" ( 6 out of 9)
+# Scans Ed: 66
+# Scans Lse: 66
+# Scans Lsky: 66
+# Scans Tilt: 66
+# Simultaneous scans: 66
+
+Processing station "ST06" ( 7 out of 9)
+# Scans Ed: 105
+# Scans Lse: 105
+# Scans Lsky: 105
+# Scans Tilt: 105
+# Simultaneous scans: 105
+
+Processing station "ST07" ( 8 out of 9)
+# Scans Ed: 96
+# Scans Lse: 96
+# Scans Lsky: 96
+# Scans Tilt: 96
+# Simultaneous scans: 96
+
+Processing station "ST08" ( 9 out of 9)
+No TriOS measurement for "ST08"
+
+
+Computing Rhow for sensors specified in variable SatelliteSensors, @ the processing inputs file

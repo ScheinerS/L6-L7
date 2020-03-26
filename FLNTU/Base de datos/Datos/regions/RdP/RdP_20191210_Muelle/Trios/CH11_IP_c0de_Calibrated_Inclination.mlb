@@ -1,0 +1,25 @@
+%IDDevice                  = IP_c0de
+%IDDataType                = Inclination
+%IDDataTypeSub1            = Calibrated
+%IDDataTypeSub2            = 
+%IDDataTypeSub3            = 
+%RecordType                = 0
+%IDMethodType              = SAMIP Control
+%MethodName                = SAMIP_50AF
+
+43809.571065     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-42-20_000_039
+%IDDevice                  = IP_c0de
+%IDDataType                = Inclination
+%IDDataTypeSub1            = Calibrated
+%IDDataTypeSub2            = 
+%IDDataTypeSub3            = 
+%RecordType                = 0
+%IDMethodType              = SAMIP Control
+%MethodName                = SAMIP_50AF
+
+43809.571181     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-42-30_000_055
+43809.571296     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-42-40_000_072
+43809.571412     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-42-50_000_114
+43809.571528     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-43-00_000_127
+43809.571644     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-43-10_000_140
+43809.571759     0.000000          0.000000           0      -6     6       %CH11;;;                               %60F6_2019-12-10_13-43-20_000_153
