@@ -149,14 +149,13 @@ def clean(pathCampaign):
         data[f].rename(columns={
                 0: 'date',
                 1: 'time',
-                2: '2',
+                2: 'wavelength_1',
                 3: 'ntu_counts',
-                4: '4',
+                4: 'wavelength_2',
                 5: 'fl_counts',
-                6: '6'
+                6: 'wavelength_3'
                 }, inplace=True)
-
-    # Creo que 3 y 5 podrían tener los nombres invertidos. Revisar.
+    # Ver página 8 del manual.
         
     # No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
 
