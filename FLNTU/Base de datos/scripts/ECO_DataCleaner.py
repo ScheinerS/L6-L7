@@ -15,11 +15,6 @@ import matplotlib.pyplot as plt
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
 
-
-#%%
-
-
-
 #%%
 
 def check_date(date):
@@ -149,16 +144,15 @@ def clean(pathCampaign):
         data[f].rename(columns={
                 0: 'date',
                 1: 'time',
-                2: 'wavelength_1',
+                2: 'wavelength_fl_excitation',
                 3: 'ntu_counts',
-                4: 'wavelength_2',
+                4: 'wavelength_ntu',
                 5: 'fl_counts',
-                6: 'wavelength_3'
+                6: 'wavelength_fl_emission'
                 }, inplace=True)
-    # Ver página 8 del manual.
-        
-    # No nos queda del todo claro qué son las columnas 2, 4 y 6. Darkcounts, pero no sabemos para qué sirven.
-
+    # Ver página 8 del manual. Para mí no tiene sentido este orden caótico de las longitudes de onda. No habíamos visto este problema antes.
+    
+    
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
     
     file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
@@ -186,4 +180,3 @@ def clean(pathCampaign):
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
 #clean(pathCampaign)
-#%%
