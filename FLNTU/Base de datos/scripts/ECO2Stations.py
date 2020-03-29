@@ -105,10 +105,6 @@ def ECO2Stations(campaign0,path0):
         for stat in ['Mean','Std','CV']:
             csStations[stat] = pd.DataFrame(index=stationIDs)
 
-        '''
-        J: El siguiente 'for' ya no tiene sentido, porque para el caso de los instrumentos de Campbell había varios archivos de entrada (típicamente 2, uno por datalogger)... pero en este caso es un único archivo... voy a reemplazar file>>filenameCs en el bloque...
-        '''
-#        for file in filenameCs:
         csCont = pd.DataFrame()
         '''
         La siguiente funcion no serviría en su caso xq optaron por el formato Excel, deberian usar read_excel:
