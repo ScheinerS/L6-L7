@@ -181,48 +181,6 @@ def ECO2Stations(campaign0,path0):
             writer.save()
             writer.close()
             
-            # S: No entiendo bien qué pasa a continuación. No sé qué es 'CR200X'
-            
-            ##### DATOS SUAVIZADOS A 'smoothWinMin' MIN
-        '''
-        J: Este if ya no tiene sentido...
-        '''
-        if True: # S: puse esta línea momentáneamente para que funcionara el bloque. BORRAR AL FINAL.
-            #if file[0:6] != 'CR200X':
-                csSmooth = pd.DataFrame()
-                step = 0
-                flag = True
-                while flag:
-                    timeWin = csCont['timestamp'].min() + timedelta(minutes=step*float(inputs['smoothWinMin']))
-                    step+=1
-                    flag = timeWin < csCont['timestamp'].max()
-                    timeDeltaWin = abs(csContTime-timeWin)<pd.Timedelta(float(inputs['smoothWinMin'])/2, unit='m')
-                    if any(timeDeltaWin):
-                        csContWin = csContData.loc[timeDeltaWin,:]
-                        Q1 = csContWin.quantile(0.25)
-                        Q3 = csContWin.quantile(0.75)
-                        IQR = Q3 - Q1
-                        outliers = (csContWin < (Q1 - 1.5 * IQR)) |(csContWin > (Q3 + 1.5 * IQR))
-                        csContWin[outliers] = np.nan
-                        csWinMedia = csContWin.mean()
-                        csWinStd = csContWin.std()
-                        csWinCV = csWinStd/csWinMedia*100
-                        
-#                        csWinStats = [csWinMedia,csWinStd,csWinMedia]
-                        
-                        csMeasures = list(csContWin.columns.values)
-                        for m in csMeasures:
-                            csSmooth.loc[timeWin,m + 'Mean'  ] = csWinMedia[m]
-                            csSmooth.loc[timeWin,m + 'Std'  ] = csWinStd[m]
-                            csSmooth.loc[timeWin,m + 'CV'] = csWinCV[m]
-                sheetname = file[:-4] + 'ContSmooth' + inputs['smoothWinMin'] + 'min'
-                if sheetname in wb.sheetnames:
-                    wb.remove_sheet(wb.get_sheet_by_name(sheetname))
-                csSmooth.to_excel(writer, index = True, sheet_name=sheetname)
-                #adjustColWidth(wb.get_sheet_by_name(sheetname))
-                writer.save()
-                writer.close()
-
 
         for stat in ['Mean','Std','CV']:
             csStations[stat] = csStations[stat].reindex(columns=sorted(csStations[stat].columns))
