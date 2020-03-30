@@ -1,7 +1,5 @@
 # IMPORTO LIBRERÍAS PARA QUE FUNCIONE TODO. DESPUÉS HAY QUE SACARLAS:
 
-
-
 import os
 import sys
 import pandas as pd
@@ -126,23 +124,24 @@ def ECO2Stations(campaign0,path0):
                 colNamesNew.append(cname[0] + '[' + cname[1].replace(' ','') + ']')
         csCont.columns = colNamesNew
         '''
-#%% Hasta acá funciona.
+
         # ECO Times
         
-        csCont['TIMESTAMP[TS]'] = pd.to_datetime(csCont['TIMESTAMP[TS]'])-timedelta(hours=float(inputs['deltaUTC']))
-        csContTime = csCont['TIMESTAMP[TS]']
+        csCont['timestamp'] = pd.to_datetime(csCont['timestamp'])-timedelta(hours=float(inputs['deltaUTC']))
+        csContTime = csCont['timestamp']
 
-   
+#%% Hasta acá funciona. Después, dejo de entender muchas cosas y algunas no andan. Cambié algunas etiquetas para adecuarlas al ECO, pero otras no sé qué son.
+        
         ##### DATOS POR ESTACION
         print('Data per station')
         
-        # campbell collected data
+        # ECO collected data
         csContData = pd.DataFrame()
         others = [c for c in csCont.columns if (c.lower()[:2] == 'wd' or c.lower()[:12] == 'stationnames' or c.lower()[:7] == 'temp_cr')]
-        csContData = csCont.drop(['TIMESTAMP[TS]','RECORD[RN]','BattV[Volts]'] + others, axis=1)
+        #csContData = csCont.drop(['TIMESTAMP[TS]','RECORD[RN]','BattV[Volts]'] + others, axis=1)
         csContData = csContData.apply(pd.to_numeric, errors='coerce')
         csMeasures = list(csContData.columns.values)
-    
+
         csStStats  = {}
         for st in stationIDs:
             print('Processing station ' + str(st))
@@ -182,18 +181,21 @@ def ECO2Stations(campaign0,path0):
             writer.save()
             writer.close()
             
+            # S: No entiendo bien qué pasa a continuación. No sé qué es 'CR200X'
+            
             ##### DATOS SUAVIZADOS A 'smoothWinMin' MIN
         '''
         J: Este if ya no tiene sentido...
         '''
-            if file[0:6] != 'CR200X':
+        if True: # S: puse esta línea momentáneamente para que funcionara el bloque. BORRAR AL FINAL.
+            #if file[0:6] != 'CR200X':
                 csSmooth = pd.DataFrame()
                 step = 0
                 flag = True
                 while flag:
-                    timeWin = csCont['TIMESTAMP[TS]'].min() + timedelta(minutes=step*float(inputs['smoothWinMin']))
+                    timeWin = csCont['timestamp'].min() + timedelta(minutes=step*float(inputs['smoothWinMin']))
                     step+=1
-                    flag = timeWin < csCont['TIMESTAMP[TS]'].max()
+                    flag = timeWin < csCont['timestamp'].max()
                     timeDeltaWin = abs(csContTime-timeWin)<pd.Timedelta(float(inputs['smoothWinMin'])/2, unit='m')
                     if any(timeDeltaWin):
                         csContWin = csContData.loc[timeDeltaWin,:]
