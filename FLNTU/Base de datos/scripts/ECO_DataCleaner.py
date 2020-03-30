@@ -8,6 +8,7 @@ import os
 import pandas as pd
 #import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 #import glob
 #from scipy.optimize import curve_fit
 #from scipy.odr import Model,RealData,ODR
@@ -33,7 +34,7 @@ def check_date(date):
             
     if day>0 and day<32:
         if month>0 and month<13:
-            if year>18 and year<22: # Va a haber que cambiarlo en 2022.
+            if year>18 and year<datetime.date.today().year+1: # El año en que se está, más uno.
                 return True
             else:
                 return False
@@ -101,6 +102,28 @@ def check_all(L):
     else:
         return False
 
+def createTimestamp(date, time):
+    # función que crea un timestamp en la fila L a partir de la fecha y hora.
+    
+    # date = '9/15/18'  # ejemplo
+    # time = '20:15:45' # ejemplo
+    
+    date = date.split('/')
+    
+    # La fecha está inicialmente en el formato mm-dd-aa
+    day = int(date[1])
+    month = int(date[0])
+    year = 2000 + int(date[2])
+    
+    date = datetime.date(year, month, day)
+    
+    # Pasamos la fecha a ISO 8601 (aaaa-mm-dd):
+    date_ISO = date.isoformat()
+    
+    timestamp = date_ISO + ' ' + time
+    
+    return timestamp
+    
 #%%
 
 def clean(pathCampaign):
@@ -156,7 +179,8 @@ def clean(pathCampaign):
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
     
     file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
-    
+    # Agregamos una columna para el timestamp:
+    file["timestamp"]=None
 
     for i in range(len(data[fileA])):
         # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
@@ -164,38 +188,10 @@ def clean(pathCampaign):
         #TIME = data[fileA].iloc[i]['time']
         
         L_A = data[fileA].iloc[i]
-        
+         
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
-            #print(L)
-
-#%% Le damos formato a la fecha y hora para armar el 'timestamp':
-
-import datetime
-date = '9/15/18'
-
-date = date.split('/')
-
-# La fecha está en el formato mm-dd-aaaa
-day = int(date[1])
-month = int(date[0])
-year = 2000 + int(date[2])
-
-date = datetime.date(year, month, day)
-
-date_ISO = date.isoformat()
-
-time = '20:15:45'
-
-timestamp = date_ISO + ' ' + time
-
-print(timestamp)
-
-######################################
-######################################
-# FALTA: AGREGAR UNA COLUMNA 'timestamp' y que se haga para cada línea del archivo.
-######################################
-######################################
+            file.set_value(i,['timestamp'], createTimestamp(L_A['date'], L_A['time']))
 
 #%%
 
