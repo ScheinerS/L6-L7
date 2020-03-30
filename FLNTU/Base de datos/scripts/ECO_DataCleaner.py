@@ -191,8 +191,9 @@ def clean(pathCampaign):
          
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
-            file.set_value(i,['timestamp'], createTimestamp(L_A['date'], L_A['time']))
-
+            #file.set_value(i,['timestamp'], createTimestamp(L_A['date'], L_A['time']))
+            file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
+#df.at[4, 'B']
 #%%
 
     new_filename = filename + '_cleaned' 
