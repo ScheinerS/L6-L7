@@ -22,7 +22,7 @@ Por otro lado, habría que definir dos 'path0': uno que apunte al directorio don
 #path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
 # pathModules = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/scripts'
 
-# SANTI: Creo que logré automatizar el reconocimiento de los paths (en mi máquina funciona):
+# S: Creo que logré automatizar el reconocimiento de los paths (en mi máquina funciona):
 path0 = os.path.dirname(os.path.realpath('__file__'))
 pathModules = os.path.dirname(path0) + '/Datos'
     
@@ -113,7 +113,9 @@ def ECO2Stations(campaign0,path0):
 
         csCont = pd.read_excel(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = 0,index_col = 0)
         '''HASTA ACÁ REVISADO!!!! FIJENSE SI logran hacer andar el resto de la funcion. Va a haber partes que tengan sentido y otras que no. La esencia está, falta ver - de acá en adelante - que modificaciones son necesarias para obtener los valores por estación y suavizados a 1 minuto...'''
-
+        
+        # S: este bloque cambia los nombres de las columnas, pero no entiendo para qué:
+        '''
         # Change column names
         colNamesOld = list(csCont.columns)
         colNamesNew = []
@@ -123,13 +125,14 @@ def ECO2Stations(campaign0,path0):
             else:
                 colNamesNew.append(cname[0] + '[' + cname[1].replace(' ','') + ']')
         csCont.columns = colNamesNew
-
-        # campbell Times
-        csCont = csCont.drop(csCont.index[[0]])    # Drop extra-headers
+        '''
+#%% Hasta acá funciona.
+        # ECO Times
+        
         csCont['TIMESTAMP[TS]'] = pd.to_datetime(csCont['TIMESTAMP[TS]'])-timedelta(hours=float(inputs['deltaUTC']))
         csContTime = csCont['TIMESTAMP[TS]']
 
-        
+   
         ##### DATOS POR ESTACION
         print('Data per station')
         

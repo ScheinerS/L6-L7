@@ -169,6 +169,36 @@ def clean(pathCampaign):
             file = file.append(L_A, ignore_index=True)
             #print(L)
 
+#%% Le damos formato a la fecha y hora para armar el 'timestamp':
+
+import datetime
+date = '9/15/18'
+
+date = date.split('/')
+
+# La fecha está en el formato mm-dd-aaaa
+day = int(date[1])
+month = int(date[0])
+year = 2000 + int(date[2])
+
+date = datetime.date(year, month, day)
+
+date_ISO = date.isoformat()
+
+time = '20:15:45'
+
+timestamp = date_ISO + ' ' + time
+
+print(timestamp)
+
+######################################
+######################################
+# FALTA: AGREGAR UNA COLUMNA 'timestamp' y que se haga para cada línea del archivo.
+######################################
+######################################
+
+#%%
+
     new_filename = filename + '_cleaned' 
     
     if Save_Excel:
