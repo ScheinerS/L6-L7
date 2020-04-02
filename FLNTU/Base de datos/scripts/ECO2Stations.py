@@ -109,10 +109,6 @@ def ECO2Stations(campaign0,path0):
 
         csCont = pd.read_excel(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = 0,index_col = 0)
         
-        # S: este bloque cambia los nombres de las columnas, pero no entiendo para qué:
-        # J: era solo cuestion cosmetica, para que los nombres de las columnas
-        # en la base de datos fueran entendibles - a veces, los nombres de los
-        # headers crudos no son muy satisfactorios...
         '''
         # Change column names
         colNamesOld = list(csCont.columns)
@@ -129,8 +125,6 @@ def ECO2Stations(campaign0,path0):
         # Corrección por desfasaje entre huso horario del instrumento y UTC:
         csCont['timestamp'] = pd.to_datetime(csCont['timestamp'])-timedelta(hours=float(inputs['deltaUTC']))
         csContTime = csCont['timestamp']
-
-# Hasta acá funciona. Después, dejo de entender muchas cosas y algunas no andan. Cambié algunas etiquetas para adecuarlas al ECO, pero otras no sé qué son.
         
         ##### DATOS POR ESTACION
         print('Data per station')
@@ -139,20 +133,14 @@ def ECO2Stations(campaign0,path0):
 
         # csContData = pd.DataFrame()
 
-        # J: Las dos siguientes lineas ("others" y una que ya habias comentado) 
-        # eran para eliminar columnas de la tabla que consideren que no tiene 
-        # sentido agregar a la base de datos.
-
         # others = [c for c in csCont.columns if (c.lower()[:2] == 'wd' or c.lower()[:12] == 'stationnames' or c.lower()[:7] == 'temp_cr')]
 
         # J: En 'csContData' van las variables a promediar, hay que sacar los tiempos y los parametros fijos
-        csContData = csCont.copy() # cambiado por J
+        csContData = csCont.copy()
         csContData = csCont.drop(['date','time','wavelength_fl_excitation', 'wavelength_ntu', 'wavelength_fl_emission','timestamp', 'ntu_counts', 'fl_counts'], axis=1)
         csContData = csContData.apply(pd.to_numeric, errors='coerce')
         
         csMeasures = list(csContData.columns.values)
-
-        # J: Observen que en csMeasures quedaron unicamente las variables propiamente dichas: ntu_counts y fl_counts
 
         csStStats  = {}
         st0 = -1
