@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Este módulo verifica los formatos de las filas del archivo '.raw' que entrega el ECO FLNTU y elimina las que no cumplan con los formatos correspondientes para cada columna. Los datos 'buenos' se guardan en otro archivo '.csv' o .xlsx'.
+Este módulo verifica los formatos de las filas del archivo '.raw' que entrega el ECO FLNTU y elimina las que no cumplan con los formatos correspondientes para cada columna. Los datos 'buenos' se guardan en otro archivo '.csv' o .xlsx', ya calibrados y con el timestamp correspondiente.
 """
 
 import sys
 import os
 import pandas as pd
 #import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import datetime
 #import glob
 #from scipy.optimize import curve_fit
@@ -175,14 +175,12 @@ def clean(pathCampaign):
         data[f].rename(columns={
                 0: 'date',
                 1: 'time',
-                2: 'wavelength_fl_excitation',
-                3: 'ntu_counts',
+                2: 'wavelength_fl_emission',
+                3: 'fl_counts',
                 4: 'wavelength_ntu',
-                5: 'fl_counts',
-                6: 'wavelength_fl_emission'
-                }, inplace=True)
-    # Ver página 8 del manual. Para mí no tiene sentido este orden caótico de las longitudes de onda. No habíamos visto este problema antes.
-    
+                5: 'ntu_counts',
+                6: 'wavelength_fl_excitation'
+                }, inplace=True)    
     
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
     
