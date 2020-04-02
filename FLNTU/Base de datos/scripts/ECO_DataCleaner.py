@@ -123,6 +123,18 @@ def createTimestamp(date, time):
     timestamp = date_ISO + ' ' + time
     
     return timestamp
+
+def calibrate_ntu(ntu_counts):
+    darkcounts = 50 # counts
+    scaleFactor_NTU = 0.2438 # NTU/counts
+    ntu = scaleFactor_NTU * (ntu_counts - darkcounts)
+    return ntu
+
+def calibrate_fl(fl_counts):
+    darkcounts = 50 # counts
+    scaleFactor_FL = 0.0607 # CHL/counts
+    fl = scaleFactor_FL * (fl_counts - darkcounts)
+    return fl
     
 #%%
 
@@ -179,9 +191,11 @@ def clean(pathCampaign):
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
     
     file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
-    # Agregamos una columna para el timestamp:
-    file["timestamp"]=None
-
+    # Agregamos las columnas para el timestamp, y para las calibraciones de NTU y FL:
+    file["timestamp"] = None
+    file["ntu (NTU)"] = None
+    file["fl (CHL)"] = None
+    
     for i in range(len(data[fileA])):
         # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
         #DATE = data[fileA].iloc[i]['date']
@@ -191,10 +205,9 @@ def clean(pathCampaign):
          
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
-            #file.set_value(i,['timestamp'], createTimestamp(L_A['date'], L_A['time']))
             file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
-#df.at[4, 'B']
-#%%
+            file.at[i,'ntu (NTU)'] = calibrate_ntu(int(L_A['ntu_counts']))
+            file.at[i,'fl (CHL)'] = calibrate_fl(int(L_A['fl_counts']))
 
     new_filename = filename + '_cleaned' 
     

@@ -1,3 +1,4 @@
+#%%
 # IMPORTO LIBRERÍAS PARA QUE FUNCIONE TODO. DESPUÉS HAY QUE SACARLAS:
 
 import os
@@ -11,33 +12,35 @@ from datetime import timedelta
 '''
 En ppio NO anda la función para determinar el path absoluto del current file en Spyder =(, tal como se comenta en el siguiente thread:
 https://github.com/spyder-ide/spyder/issues/3154
-
-Por otro lado, habría que definir dos 'path0': uno que apunte al directorio donde ponen todos sus módulos caseros, y otro que apunte a los datos: los voy a llamar pathModules y path0 - este ultimo igual que antes
 '''
 
 # path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
 
-#path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
+# path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
 # pathModules = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/scripts'
 
 # S: Creo que logré automatizar el reconocimiento de los paths (en mi máquina funciona):
+# J: A mi no, y estoy con la versión más nueva de Spyder =(...
+
 path0 = os.path.dirname(os.path.realpath('__file__'))
-pathModules = os.path.dirname(path0) + '/Datos'
-    
+pathModules = os.path.dirname(path0) + '/scripts'
+path0 = os.path.dirname(path0) + '/Datos'
+
 sys.path.append(pathModules)
 
 import ECO_DataCleaner as DC
 
 campaign0 = 'RdP_20191217_Muelle'
 
-
 #%%
 def ECO2Stations(campaign0,path0):
 
-#    campaign0 = 'RdP_20191217_Muelle'
-#    path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
+    # campaign0 = 'RdP_20191217_Muelle'
+    # path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
 
-    pathRegions   = pathModules + '/regions'
+# en el siguiente renglon el path no es a los modulos, sino a los datos:
+    # pathRegions   = pathModules + '/regions'
+    pathRegions   = path0 + '/regions'
 
     region = campaign0.split('_')[0]
     date   = campaign0.split('_')[1]
@@ -74,12 +77,7 @@ def ECO2Stations(campaign0,path0):
         # Read station IDs and Times
         stationInfo = pd.DataFrame()
         stationInfo = pd.read_excel(pathCampaign + '/' + campaign + '.xlsx',sheet_name='stationInfo',skiprows=1)
-    
-        ''' J: Creo que ya no es necesario remendar el siguiente bug ... de hecho me tira un DeprecationWarning...'''
-        # Remendar bug openpyxl (borra formatos preestablecidos)
-#        stationInfo['startTimeUTC'] = pd.to_datetime(stationInfo['startTimeUTC'],format= '%H:%M:%S' )
-#        stationInfo['timeStampUTC'] = stationInfo['DateUTC'] + pd.to_timedelta(stationInfo['startTimeUTC']) + timedelta(hours=70*24*365.25-12)
-        
+
         stationIDs   = stationInfo['StationID'   ].astype(object)
         stationTimes = stationInfo['timeStampUTC'].astype(object)
     
@@ -110,9 +108,11 @@ def ECO2Stations(campaign0,path0):
 #        csCont = pd.read_csv(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = [1,2])
 
         csCont = pd.read_excel(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = 0,index_col = 0)
-        '''HASTA ACÁ REVISADO!!!! FIJENSE SI logran hacer andar el resto de la funcion. Va a haber partes que tengan sentido y otras que no. La esencia está, falta ver - de acá en adelante - que modificaciones son necesarias para obtener los valores por estación y suavizados a 1 minuto...'''
         
         # S: este bloque cambia los nombres de las columnas, pero no entiendo para qué:
+        # J: era solo cuestion cosmetica, para que los nombres de las columnas
+        # en la base de datos fueran entendibles - a veces, los nombres de los
+        # headers crudos no son muy satisfactorios...
         '''
         # Change column names
         colNamesOld = list(csCont.columns)
@@ -126,26 +126,40 @@ def ECO2Stations(campaign0,path0):
         '''
 
         # ECO Times
-        
+        # Corrección por desfasaje entre huso horario del instrumento y UTC:
         csCont['timestamp'] = pd.to_datetime(csCont['timestamp'])-timedelta(hours=float(inputs['deltaUTC']))
         csContTime = csCont['timestamp']
 
-#%% Hasta acá funciona. Después, dejo de entender muchas cosas y algunas no andan. Cambié algunas etiquetas para adecuarlas al ECO, pero otras no sé qué son.
+# Hasta acá funciona. Después, dejo de entender muchas cosas y algunas no andan. Cambié algunas etiquetas para adecuarlas al ECO, pero otras no sé qué son.
         
         ##### DATOS POR ESTACION
         print('Data per station')
         
         # ECO collected data
-        csContData = pd.DataFrame()
-        others = [c for c in csCont.columns if (c.lower()[:2] == 'wd' or c.lower()[:12] == 'stationnames' or c.lower()[:7] == 'temp_cr')]
-        #csContData = csCont.drop(['TIMESTAMP[TS]','RECORD[RN]','BattV[Volts]'] + others, axis=1)
+
+        # csContData = pd.DataFrame()
+
+        # J: Las dos siguientes lineas ("others" y una que ya habias comentado) 
+        # eran para eliminar columnas de la tabla que consideren que no tiene 
+        # sentido agregar a la base de datos.
+
+        # others = [c for c in csCont.columns if (c.lower()[:2] == 'wd' or c.lower()[:12] == 'stationnames' or c.lower()[:7] == 'temp_cr')]
+
+        # J: En 'csContData' van las variables a promediar, hay que sacar los tiempos y los parametros fijos
+        csContData = csCont.copy() # cambiado por J
+        csContData = csCont.drop(['date','time','wavelength_fl_excitation', 'wavelength_ntu', 'wavelength_fl_emission','timestamp', 'ntu_counts', 'fl_counts'], axis=1)
         csContData = csContData.apply(pd.to_numeric, errors='coerce')
+        
         csMeasures = list(csContData.columns.values)
 
+        # J: Observen que en csMeasures quedaron unicamente las variables propiamente dichas: ntu_counts y fl_counts
+
         csStStats  = {}
+        st0 = -1
         for st in stationIDs:
+            st0+=1
             print('Processing station ' + str(st))
-            timeSt = stationTimes[stationIDs==st][0]
+            timeSt = stationTimes[stationIDs==st][st0]
             timeDeltaSt = abs(csContTime-timeSt)<pd.Timedelta(float(inputs['timeDeltaStationMin']), unit='m')
             if any(timeDeltaSt):
                 csContSt = csContData.loc[timeDeltaSt,:]
@@ -172,21 +186,24 @@ def ECO2Stations(campaign0,path0):
             csStations[stat] = pd.concat([csStations[stat], csStationsFile], axis=1)
                                 
 
-            ##### DATOS CRUDOS
-            sheetname = file[:-4]
-            if sheetname in wb.sheetnames:
-                wb.remove_sheet(wb.get_sheet_by_name(sheetname))
-            csCont.to_excel(writer, index = False, sheet_name=sheetname)
-            #adjustColWidth(wb.get_sheet_by_name(sheetname))
-            writer.save()
-            writer.close()
+            # Por ahora olvídense de este bloque
+            # ##### DATOS CRUDOS
+            # # J: El siguiente renglon claramente hay q cambiarlo:
+            # # sheetname = file[:-4] # comentado por J
+            # sheetname = 'ECO_FLNTU_continuous' + '_' + stat
+            # if sheetname in wb.sheetnames:
+            #     del wb[sheetname]
+            # csContData.to_excel(writer, index = False, sheet_name=sheetname)
+            # #adjustColWidth(wb.get_sheet_by_name(sheetname))
+            # writer.save()
+            # writer.close()
             
 
         for stat in ['Mean','Std','CV']:
             csStations[stat] = csStations[stat].reindex(columns=sorted(csStations[stat].columns))
             sheetname = 'Stations' + '_' + stat
             if sheetname in wb.sheetnames:
-                wb.remove_sheet(wb.get_sheet_by_name(sheetname))
+                del wb[sheetname]
             csStations[stat].to_excel(writer, index = True, sheet_name=sheetname, startrow=1)
             #adjustColWidth(wb.get_sheet_by_name(sheetname))
             writer.save()
@@ -197,3 +214,4 @@ def ECO2Stations(campaign0,path0):
 # CORRO LA FUNCIÓN. BORRAR ESTE BLOQUE CUANDO ESTÉ TERMINADO.
 
 ECO2Stations(campaign0,path0)
+
