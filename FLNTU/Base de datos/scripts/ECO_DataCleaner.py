@@ -142,10 +142,6 @@ def clean(pathCampaign):
 
 #    pathCampaign = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos/regions/RdP/RdP_20191217_Muelle'
 
-    '''
-        J: filename: Qué les parece así?:
-    '''
-
     filename =      pathCampaign.split('/')[-1 ]
     filename = '_'.join(filename.split('_')[:-1])
 
