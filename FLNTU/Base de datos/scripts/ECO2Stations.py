@@ -102,11 +102,7 @@ def ECO2Stations(campaign0,path0):
             csStations[stat] = pd.DataFrame(index=stationIDs)
 
         csCont = pd.DataFrame()
-        '''
-        La siguiente funcion no serviría en su caso xq optaron por el formato Excel, deberian usar read_excel:
-        '''
-#        csCont = pd.read_csv(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = [1,2])
-
+        
         csCont = pd.read_excel(pathCampaign + '/ECO_FLNTU/' + filenameCs, header = 0,index_col = 0)
         
         '''
