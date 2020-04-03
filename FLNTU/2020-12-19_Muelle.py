@@ -84,7 +84,7 @@ plt.figure()
 
 stations = range(1,13)
 
-plt.plot(ntu_OBS,ntu_ECO, 'o', color='blue', label=r'')
+plt.errorbar(ntu_OBS, ntu_ECO, xerr=ntu_OBS_err, yerr=ntu_ECO_err, fmt='o',color='blue', label=r'', ms=5.5, zorder=0)
 #plt.plot(ntu_HACH,ntu_ECO, 'o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
@@ -104,7 +104,7 @@ plt.figure()
 
 stations = range(1,13)
 
-plt.plot(ntu_HACH,ntu_ECO, 'o', color='red', label=r'')
+plt.errorbar(ntu_HACH, ntu_ECO, xerr=ntu_HACH_err, yerr=ntu_ECO_err, fmt='o',color='red', label=r'', ms=5.5, zorder=0)
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'2020-12-17 -- Muelle (Stations Mean)', fontsize=TitleSize)
