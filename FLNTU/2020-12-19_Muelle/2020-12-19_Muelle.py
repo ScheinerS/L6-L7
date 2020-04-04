@@ -91,7 +91,7 @@ def ODR_Fit(function,x,y,x_err,y_err):
     # Create a RealData object using our initiated data from above.
     D = RealData(x, y, sx=x_err, sy=y_err)
     # Set up ODR with the model and data.
-    odr = ODR(D, model, beta0=[0.4, 0.])
+    odr = ODR(D, model, beta0=[0.7, 0.])
     # Run the regression.
     out = odr.run()
     # Use the in-built pprint method to give us results.
