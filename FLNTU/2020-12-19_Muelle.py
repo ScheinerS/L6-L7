@@ -7,7 +7,7 @@ Comparamos las curvas de turbidez con los de otros instrumentos para la campaña
 import sys
 import os
 import pandas as pd
-#import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 from scipy.odr import Model,RealData,ODR
 
@@ -75,17 +75,49 @@ if Linux:
     plt.savefig(path + '/' + campaign + '.png')
 
 #%% Ajuste:
+ 
+#def lineal_con_offset(p0,x):
+#    a, b = p0 # parámetros iniciales
+#    return a*x + b
 
+def lineal(p0,x):
+    a, b = p0
+    return a*x
+
+def ODR_Fit(function,x,y,x_err,y_err):
+    print('Ajuste:\t',function.__name__,'\n')
+    # Create a model for fitting.
+    model = Model(function)
+    # Create a RealData object using our initiated data from above.
+    D = RealData(x, y, sx=x_err, sy=y_err)
+    # Set up ODR with the model and data.
+    odr = ODR(D, model, beta0=[0.4, 0.])
+    # Run the regression.
+    out = odr.run()
+    # Use the in-built pprint method to give us results.
+    out.pprint()
+    print(40*'-')
+    return out
+
+print(40*'*'+'\n\t\tOBS\n'+40*'*')
+fit_OBS = ODR_Fit(lineal, ntu_OBS, ntu_ECO, ntu_OBS_err, ntu_ECO_err)
+
+#print(40*'*'+'\n\t\tHACH\n'+40*'*')
+#fit_Hach_offset = ODR_Fit(lineal_con_offset,x_Hach,y_Hach,x_Hach_err_tot,y_Hach_err)
+#fit_OBS_offset = ODR_Fit(lineal_con_offset,x_OBS,y_OBS,x_OBS_err,y_OBS_err)
 
 #%%
 # Gráfico OBS-ECO:
 
 plt.figure()
 
-stations = range(1,13)
-
 plt.errorbar(ntu_OBS, ntu_ECO, xerr=ntu_OBS_err, yerr=ntu_ECO_err, fmt='o',color='blue', label=r'', ms=5.5, zorder=0)
-#plt.plot(ntu_HACH,ntu_ECO, 'o', color='red', label=r'HACH')
+
+[m, b] = fit_OBS.beta
+x = np.linspace(0, max(ntu_OBS), 50)
+y = m*x + b
+
+plt.plot(x,y, color='skyblue', label=r'Linear fit')
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'2020-12-17 -- Muelle (Stations Mean)', fontsize=TitleSize)
@@ -101,8 +133,6 @@ if Linux:
 # Gráfico HACH-ECO:
 
 plt.figure()
-
-stations = range(1,13)
 
 plt.errorbar(ntu_HACH, ntu_ECO, xerr=ntu_HACH_err, yerr=ntu_ECO_err, fmt='o',color='red', label=r'', ms=5.5, zorder=0)
 
