@@ -44,12 +44,12 @@ dataECO_CV = pd.read_excel(pathECO ,sheet_name='Stations_CV',skiprows=1)
 dataOBS_CV = pd.read_excel(pathOBS ,sheet_name='Stations_CV',skiprows=1)
 dataHACH_CV = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
 
-ntu_ECO = dataECO_Mean['ntu (NTU)']
+ntu_ECO = dataECO_Mean['turbidity (NTU)']
 ntu_OBS = dataOBS_Mean['SS_OBS501_I2016[FNU]']
 ntu_HACH = dataHACH_Mean['Mean']
 
 # CV: coefficient of variation
-ntu_ECO_err = dataECO_Mean['ntu (NTU)'] * dataECO_CV['ntu (NTU)']/100
+ntu_ECO_err = dataECO_Mean['turbidity (NTU)'] * dataECO_CV['turbidity (NTU)']/100
 ntu_OBS_err = dataOBS_Mean['SS_OBS501_I2016[FNU]'] * dataOBS_CV['SS_OBS501_I2016[FNU]']/100
 ntu_HACH_err = dataHACH_Mean['Mean'] * dataHACH_CV['CV[%]']/100
 
@@ -60,14 +60,14 @@ plt.figure()
 
 stations = range(1,13)
 
-plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO')
-plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS')
+plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
+plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
 plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
-plt.title(r'NTU (17 DIC 2019)', fontsize=TitleSize)
+plt.title(r'Turbidity (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'Station (STxx)', fontsize=AxisLabelSize)
-plt.ylabel(r'NTU', fontsize=AxisLabelSize)
+plt.ylabel(r'Turbidity (NTU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
@@ -120,7 +120,7 @@ plt.plot(x,y, color='skyblue', label=r'%.4g $x$ + %.4g'%(m,b))
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'2020-12-17 -- Muelle (Stations Mean)', fontsize=TitleSize)
-plt.xlabel(r'OBS (FNU)', fontsize=AxisLabelSize)
+plt.xlabel(r'OBS501 (2016) [SS] (FNU)', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()

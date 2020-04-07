@@ -88,8 +88,8 @@ def check_all(L):
    
     a = check_date(L['date'])
     b = check_time(L['time'])
-    c = check_counts(L['ntu_counts'])
-    d = check_counts(L['fl_counts'])
+    c = check_counts(L['turbidity_counts'])
+    d = check_counts(L['chl_counts'])
     
     # Chequeamos que las otras columnas también sean enteros acotados entre 0 y 4130, para detectar otros errores:
     
@@ -175,11 +175,11 @@ def clean(pathCampaign):
         data[f].rename(columns={
                 0: 'date',
                 1: 'time',
-                2: 'wavelength_fl_emission',
-                3: 'fl_counts',
-                4: 'wavelength_ntu',
-                5: 'ntu_counts',
-                6: 'wavelength_fl_excitation'
+                2: 'wavelength_chl_emission',
+                3: 'chl_counts',
+                4: 'wavelength_turbidity',
+                5: 'turbidity_counts',
+                6: 'wavelength_chl_excitation'
                 }, inplace=True)    
     
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
@@ -187,8 +187,8 @@ def clean(pathCampaign):
     file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
     # Agregamos las columnas para el timestamp, y para las calibraciones de NTU y FL:
     file["timestamp"] = None
-    file["ntu (NTU)"] = None
-    file["fl (CHL)"] = None
+    file["turbidity (NTU)"] = None
+    file["chl (ug/l)"] = None
     
     for i in range(len(data[fileA])):
         # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
@@ -200,8 +200,8 @@ def clean(pathCampaign):
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
             file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
-            file.at[i,'ntu (NTU)'] = calibrate_ntu(int(L_A['ntu_counts']))
-            file.at[i,'fl (CHL)'] = calibrate_fl(int(L_A['fl_counts']))
+            file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L_A['turbidity_counts']))
+            file.at[i,'chl (ug/l)'] = calibrate_fl(int(L_A['chl_counts']))
 
     new_filename = filename + '_cleaned' 
     
