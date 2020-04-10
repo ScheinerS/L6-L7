@@ -179,7 +179,7 @@ def clean(pathCampaign):
                 3: 'chl_counts',
                 4: 'wavelength_turbidity',
                 5: 'turbidity_counts',
-                6: 'wavelength_chl_excitation'
+                6: 'cpu_temperature'
                 }, inplace=True)    
     
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:

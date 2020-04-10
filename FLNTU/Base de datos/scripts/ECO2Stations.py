@@ -133,7 +133,7 @@ def ECO2Stations(campaign0,path0):
 
         # J: En 'csContData' van las variables a promediar, hay que sacar los tiempos y los parametros fijos
         csContData = csCont.copy()
-        csContData = csCont.drop(['date','time','wavelength_chl_excitation', 'wavelength_turbidity', 'wavelength_chl_emission','timestamp', 'turbidity_counts', 'chl_counts'], axis=1)
+        csContData = csCont.drop(['date','time','cpu_temperature', 'wavelength_turbidity', 'wavelength_chl_emission','timestamp', 'turbidity_counts', 'chl_counts'], axis=1)
         csContData = csContData.apply(pd.to_numeric, errors='coerce')
         
         csMeasures = list(csContData.columns.values)
