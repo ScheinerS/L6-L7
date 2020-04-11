@@ -27,6 +27,59 @@ if os.name == 'posix':   # Linux
 plt.rc('text', usetex=Linux)
 plt.rc('font', family='serif')
 
+
+#%% Continuous:
+
+pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/RdP_20191217_cleaned.xlsx'
+
+pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/CR800_I2016.dat'
+
+# No hay datos en contiuno para el Hach.
+
+dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows=0, header=None,usecols=range(0,7))
+dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
+
+dataOBS_Continuous.drop(index=[0,1], inplace=True)
+
+
+time_ECO_Continuous = dataECO_Continuous['timestamp']
+ntu_ECO_Continuous = dataECO_Continuous['turbidity (NTU)']
+
+time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
+ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
+
+# Pasamos los números a float, porque están como string:
+ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
+
+#%%
+# Gráfico (mediciones en continuo):
+
+# VA A HABER QUE USAR DATEUTILS O ALGO ASÍ PARA LA HORA.
+
+# El problema es que la Pandas Series ntu_OBS tiene números en formato string. Hay que pasarlos a float.
+
+#ntu_OBS = ntu_OBS[0:20]
+
+plt.figure()
+
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Turbidity (continuous) (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'Time', fontsize=AxisLabelSize)
+plt.ylabel(r'Turbidity (NTU)', fontsize=AxisLabelSize)
+plt.ylim(0,100)
+#plt.locator_params(axis='y', nbins=10)
+#plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+#if Linux:
+#    plt.savefig(path + '/' + campaign + '.png')
+
+#%% Processed
+
 pathECO = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
 
 pathOBS = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell.xlsx'
