@@ -82,6 +82,22 @@ def check_counts(counts):
         return False
 
 #######################
+    
+def check_wavelength_turbidity(l):    
+    if l=='700':
+        return True
+    else:
+        return False
+
+#######################
+                
+def check_wavelength_chl_emission(l):    
+    if l=='695':
+        return True
+    else:
+        return False
+    
+#######################
 
 def check_all(L):
     # esta función verifica todas las columnas para la línea L
@@ -91,11 +107,13 @@ def check_all(L):
     c = check_counts(L['turbidity_counts'])
     d = check_counts(L['chl_counts'])
     
-    # Chequeamos que las otras columnas también sean enteros acotados entre 0 y 4130, para detectar otros errores:
+    e = check_wavelength_chl_emission (L['check_wavelength_chl_emission'])
+    f = check_wavelength_turbidity(L['wavelength_turbidity'])
     
-    e = check_counts(L[2])
-    f = check_counts(L[4])
+    # Chequeamos que la otra columna también tenga enteros acotados entre 0 y 4130, para detectar otros errores:
+
     g = check_counts(L[6])
+    
     
     if a and b and c and d and e and f and g:
         return True
@@ -191,17 +209,25 @@ def clean(pathCampaign):
     file["chl (ug/l)"] = None
     
     for i in range(len(data[fileA])):
-        # Almacenamos temporalmente la fecha y hora asociada al índice 'i' en el archivo A:
-        #DATE = data[fileA].iloc[i]['date']
-        #TIME = data[fileA].iloc[i]['time']
         
         L_A = data[fileA].iloc[i]
          
         if check_all(L_A):
             file = file.append(L_A, ignore_index=True)
+    
+    print('Adding timestamps and calibration...\n')
+
+    # Hacer el loop dos veces no es muy eficiente pero arregla problemas, así que por el momento, lo hacemos así:
+    
+    for i in range(len(data[fileA])):
+        L_A = data[fileA].iloc[i]
+        
+        if check_all(L_A):
+            #print(L_A)
             file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
             file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L_A['turbidity_counts']))
             file.at[i,'chl (ug/l)'] = calibrate_fl(int(L_A['chl_counts']))
+        
 
     new_filename = filename + '_cleaned' 
     

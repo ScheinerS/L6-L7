@@ -10,14 +10,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.odr import Model,RealData,ODR
+#import datetime as dt
+import matplotlib.dates as md
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
 
-TitleSize = 20
-AxisLabelSize = 15
-LegendSize = 15
-NumberSize = 15
+TitleSize = 15
+AxisLabelSize = 12
+LegendSize = 12
+NumberSize = 12
 
 plt.close('all')
 
@@ -27,6 +29,8 @@ if os.name == 'posix':   # Linux
 plt.rc('text', usetex=Linux)
 plt.rc('font', family='serif')
 
+
+campaign = 'RdP_20191217_Muelle'
 
 #%% Continuous:
 
@@ -39,8 +43,11 @@ pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/r
 dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows=0, header=None,usecols=range(0,7))
 dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
 
-dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
+# Hay un bug y esta línea tiene un error:
+#dataECO_Continuous.at[3130,'timestamp']
+dataECO_Continuous.drop(index=[3130], inplace=True)
+dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
 time_ECO_Continuous = dataECO_Continuous['timestamp']
 ntu_ECO_Continuous = dataECO_Continuous['turbidity (NTU)']
@@ -48,17 +55,21 @@ ntu_ECO_Continuous = dataECO_Continuous['turbidity (NTU)']
 time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
 ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
 
+# Convertimos los timestamps del OBS en horarios:
+#for i in range(2,len(time_OBS_Continuous)):
+    # (empezamos en '2' porque eliminamos 0 y 1 antes.)
+#    time_OBS_Continuous[i] = time_OBS_Continuous[i].split(' ')[1]
+
+# Convertimos los tiempos a formato
+    
+time_ECO_Continuous = pd.to_datetime(time_ECO_Continuous)
+time_OBS_Continuous = pd.to_datetime(time_OBS_Continuous)
+
 # Pasamos los números a float, porque están como string:
 ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
 
 #%%
 # Gráfico (mediciones en continuo):
-
-# VA A HABER QUE USAR DATEUTILS O ALGO ASÍ PARA LA HORA.
-
-# El problema es que la Pandas Series ntu_OBS tiene números en formato string. Hay que pasarlos a float.
-
-#ntu_OBS = ntu_OBS[0:20]
 
 plt.figure()
 
@@ -68,15 +79,21 @@ plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Turbidity (continuous) (2019-12-17 - Muelle)', fontsize=TitleSize)
-plt.xlabel(r'Time', fontsize=AxisLabelSize)
-plt.ylabel(r'Turbidity (NTU)', fontsize=AxisLabelSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize)
 plt.ylim(0,100)
-#plt.locator_params(axis='y', nbins=10)
-#plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
-#if Linux:
-#    plt.savefig(path + '/' + campaign + '.png')
+if Linux:
+    plt.savefig(path + '/' + campaign + '_Continuous.png')
 
 #%% Processed
 
@@ -86,7 +103,6 @@ pathOBS = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/
 
 pathHACH = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/RdP_20191217.xlsx'
 
-campaign = 'RdP_20191217_Muelle'
 #%%
 
 dataECO_Mean = pd.read_excel(pathECO ,sheet_name='Stations_Mean',skiprows=1)
@@ -127,6 +143,7 @@ plt.show()
 if Linux:
     plt.savefig(path + '/' + campaign + '.png')
 
+plt.pause(1)
 #%% Ajuste:
  
 #def lineal_con_offset(p0,x):
