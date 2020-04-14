@@ -60,7 +60,7 @@ ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
     # (empezamos en '2' porque eliminamos 0 y 1 antes.)
 #    time_OBS_Continuous[i] = time_OBS_Continuous[i].split(' ')[1]
 
-# Convertimos los tiempos a formato
+# Convertimos los tiempos a formato de fecha:
     
 time_ECO_Continuous = pd.to_datetime(time_ECO_Continuous)
 time_OBS_Continuous = pd.to_datetime(time_OBS_Continuous)
@@ -78,7 +78,7 @@ plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
-plt.title(r'Turbidity (continuous) (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.title(r'Continuous (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize)
 plt.ylim(0,100)
@@ -87,6 +87,10 @@ ax=plt.gca()
 xfmt = md.DateFormatter('%H:%M')
 #xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
 ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
 
 plt.locator_params(axis='y', nbins=8)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
