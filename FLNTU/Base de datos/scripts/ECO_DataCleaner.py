@@ -18,20 +18,13 @@ sys.path.append(path)
 
 #%%
 
-def check_date(date):
-    try:
-        date = date.split('/')
-        if not len(date)==3:
-            return False
-        
-        # La fecha está en el formato mm-dd-aaaa
-        day = int(date[1])
-        month = int(date[0])
-        year = int(date[2])
-        
-    except:
+def check_date(date, CampaignDate):
+    if date == CampaignDate:
+        return True
+    else:
         return False
-            
+    
+    '''        
     if day>0 and day<32:
         if month>0 and month<13:
             if year>18 and year<datetime.date.today().year+1: # El año en que se está, más uno.
@@ -42,7 +35,7 @@ def check_date(date):
             return False
     else:
         return False
-    
+    '''
 #######################
 
 def check_time(time):
@@ -99,10 +92,10 @@ def check_wavelength_chl_emission(l):
     
 #######################
 
-def check_all(L):
+def check_all(L,CampaignDate):
     # esta función verifica todas las columnas para la línea L
    
-    a = check_date(L['date'])
+    a = check_date(L['date'], CampaignDate)
     b = check_time(L['time'])
     c = check_counts(L['turbidity_counts'])
     d = check_counts(L['chl_counts'])
@@ -162,6 +155,11 @@ def clean(pathCampaign):
 
     filename =      pathCampaign.split('/')[-1 ]
     filename = '_'.join(filename.split('_')[:-1])
+    
+    CampaignDate =      pathCampaign.split('/')[-1 ].split("_")
+    CampaignDate = CampaignDate[1]
+    # Lo pasamos al formato mm/dd/yyyy:
+    CampaignDate = CampaignDate[4:6] + '/' + CampaignDate[6:8] + '/' + CampaignDate[0:4]
 
     print('Cleaning ECO file...')
     
