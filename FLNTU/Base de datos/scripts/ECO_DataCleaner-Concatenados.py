@@ -18,13 +18,20 @@ sys.path.append(path)
 
 #%%
 
-def check_date(date, CampaignDate):
-    if date == CampaignDate:
-        return True
-    else:
+def check_date(date):
+    try:
+        date = date.split('/')
+        if not len(date)==3:
+            return False
+        
+        # La fecha está en el formato mm-dd-aaaa
+        day = int(date[1])
+        month = int(date[0])
+        year = int(date[2])
+        
+    except:
         return False
-    
-    '''        
+            
     if day>0 and day<32:
         if month>0 and month<13:
             if year>18 and year<datetime.date.today().year+1: # El año en que se está, más uno.
@@ -35,7 +42,7 @@ def check_date(date, CampaignDate):
             return False
     else:
         return False
-    '''
+    
 #######################
 
 def check_time(time):
@@ -92,10 +99,10 @@ def check_wavelength_chl_emission(l):
     
 #######################
 
-def check_all(L,CampaignDate):
+def check_all(L):
     # esta función verifica todas las columnas para la línea L
    
-    a = check_date(L['date'], CampaignDate)
+    a = check_date(L['date'])
     b = check_time(L['time'])
     c = check_counts(L['turbidity_counts'])
     d = check_counts(L['chl_counts'])
@@ -152,14 +159,9 @@ def calibrate_fl(fl_counts):
 def clean(pathCampaign):
 
 #    pathCampaign = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos/regions/RdP/RdP_20191217_Muelle'
-
+    #pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
     filename =      pathCampaign.split('/')[-1 ]
     filename = '_'.join(filename.split('_')[:-1])
-    
-    CampaignDate =      pathCampaign.split('/')[-1 ].split("_")
-    CampaignDate = CampaignDate[1]
-    # Lo pasamos al formato mm/dd/yyyy:
-    CampaignDate = CampaignDate[4:6] + '/' + CampaignDate[6:8] + '/' + CampaignDate[0:4]
 
     print('Cleaning ECO file...')
     
@@ -172,21 +174,21 @@ def clean(pathCampaign):
     
     # Lectura de los archivos del FLNTU:
     fileA = pathCampaign + '/ECO_FLNTU/' + filename + '.raw'
-    #fileB = pathCampaign + '/ECO_FLNTU/' + filename + '(1).raw'
+    fileB = pathCampaign + '/ECO_FLNTU/' + filename + ' (1).raw'
     
     try:
         data[fileA] = pd.read_csv(fileA, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))    # lee el formato '.raw' como '.csv' sin problemas.
         
-        #data[fileB] = pd.read_csv(fileB, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
+        data[fileB] = pd.read_csv(fileB, delimiter="\t", skiprows=1, header=None,usecols=range(0,7))
     except:
         print('\nError de lectura\n')
  
     data[fileA] = data[fileA].dropna()
-    #data[fileB] = data[fileB].dropna()
+    data[fileB] = data[fileB].dropna()
     
     # Nombramos las columnas relevantes de los archivos:
     
-    for f in [fileA]:#, fileB]:
+    for f in [fileA, fileB]:
         
         data[f].rename(columns={
                 0: 'date',
@@ -200,31 +202,35 @@ def clean(pathCampaign):
     
     # Armamos un archivo definitivo a partir del archivo A, y si hay un error, buscamos en el archivo B:
     
-    file = pd.DataFrame(columns=data[fileA].columns) # copiamos la estructura del archivo A.
+    fileAB = pd.DataFrame(columns=data[fileA].columns)
+    fileAB = pd.concat([data[fileA],data[fileB]])
+    
+    file = pd.DataFrame(columns=data[fileA].columns) # El archivo final.
+    
     # Agregamos las columnas para el timestamp, y para las calibraciones de NTU y FL:
     file["timestamp"] = None
     file["turbidity (NTU)"] = None
     file["chl (ug/l)"] = None
     
-    for i in range(len(data[fileA])):
+    for i in range(len(fileAB)):
         
-        L_A = data[fileA].iloc[i]
+        L = fileAB.iloc[i]
          
-        if check_all(L_A):
-            file = file.append(L_A, ignore_index=True)
+        if check_all(L):
+            file = file.append(L, ignore_index=True)
     
     print('Adding timestamps and calibration...\n')
 
     # Hacer el loop dos veces no es muy eficiente pero arregla problemas, así que por el momento, lo hacemos así:
     
-    for i in range(len(data[fileA])):
-        L_A = data[fileA].iloc[i]
+    for i in range(len(fileAB)):
+        L = fileAB.iloc[i]
         
-        if check_all(L_A):
+        if check_all(L):
             #print(L_A)
-            file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
-            file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L_A['turbidity_counts']))
-            file.at[i,'chl (ug/l)'] = calibrate_fl(int(L_A['chl_counts']))
+            file.at[i,'timestamp'] = createTimestamp(L['date'], L['time'])
+            file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L['turbidity_counts']))
+            file.at[i,'chl (ug/l)'] = calibrate_fl(int(L['chl_counts']))
         
 
     new_filename = filename + '_cleaned' 
@@ -237,4 +243,4 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(new_filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
-#clean(pathCampaign)
+clean(pathCampaign)
