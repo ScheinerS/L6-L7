@@ -76,20 +76,25 @@ def check_counts(counts):
 
 #######################
     
-def check_wavelength_turbidity(l):    
-    if l=='700':
-        return True
-    else:
+def check_wavelength_turbidity(l):
+    try:
+        if l=='700':
+            return True
+        else:
+            return False
+    except:
         return False
 
 #######################
                 
-def check_wavelength_chl_emission(l):    
-    if l=='695':
-        return True
-    else:
+def check_wavelength_chl_emission(l):
+    try:
+        if l=='695':
+            return True
+        else:
+            return False
+    except:
         return False
-    
 #######################
 
 def check_all(L,CampaignDate):
@@ -100,8 +105,15 @@ def check_all(L,CampaignDate):
     c = check_counts(L['turbidity_counts'])
     d = check_counts(L['chl_counts'])
     
-    e = check_wavelength_chl_emission (L['check_wavelength_chl_emission'])
-    f = check_wavelength_turbidity(L['wavelength_turbidity'])
+    ##############
+    # Estas dos deberían ser reemplazadas:
+    e = check_counts(L['wavelength_chl_emission'])
+    f = check_counts(L['wavelength_turbidity'])
+    # por estas dos:
+    #e = check_wavelength_chl_emission(L['check_wavelength_chl_emission'])
+    #f = check_wavelength_turbidity(L['wavelength_turbidity'])
+    # pero no están funcionando.
+    ##############
     
     # Chequeamos que la otra columna también tenga enteros acotados entre 0 y 4130, para detectar otros errores:
 
@@ -158,8 +170,8 @@ def clean(pathCampaign):
     
     CampaignDate =      pathCampaign.split('/')[-1 ].split("_")
     CampaignDate = CampaignDate[1]
-    # Lo pasamos al formato mm/dd/yyyy:
-    CampaignDate = CampaignDate[4:6] + '/' + CampaignDate[6:8] + '/' + CampaignDate[0:4]
+    # Lo pasamos al formato mm/dd/yy:
+    CampaignDate = CampaignDate[4:6] + '/' + CampaignDate[6:8] + '/' + CampaignDate[2:4]
 
     print('Cleaning ECO file...')
     
@@ -210,7 +222,7 @@ def clean(pathCampaign):
         
         L_A = data[fileA].iloc[i]
          
-        if check_all(L_A):
+        if check_all(L_A,CampaignDate):
             file = file.append(L_A, ignore_index=True)
     
     print('Adding timestamps and calibration...\n')
@@ -220,7 +232,7 @@ def clean(pathCampaign):
     for i in range(len(data[fileA])):
         L_A = data[fileA].iloc[i]
         
-        if check_all(L_A):
+        if check_all(L_A, CampaignDate):
             #print(L_A)
             file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
             file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L_A['turbidity_counts']))
@@ -237,4 +249,5 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(new_filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
-#clean(pathCampaign)
+pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
+clean(pathCampaign)

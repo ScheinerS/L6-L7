@@ -10,17 +10,13 @@ from datetime import timedelta
 
 
 '''
-En ppio NO anda la función para determinar el path absoluto del current file en Spyder =(, tal como se comenta en el siguiente thread:
-https://github.com/spyder-ide/spyder/issues/3154
+Para el path absoluto, correr el programa con F5, y no bloque por bloque.
 '''
 
 # path0 = '/Users/Tele/Desktop/L6-L7/FLNTU/Base de datos'
 
 # path0      = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/Datos'
 # pathModules = '/home/gossn/Dropbox/Documents/L6y7_Scheiner_Santamaria/scripts'
-
-# S: Creo que logré automatizar el reconocimiento de los paths (en mi máquina funciona):
-# J: A mi no, y estoy con la versión más nueva de Spyder =(...
 
 path0 = os.path.dirname(os.path.realpath('__file__'))
 pathModules = os.path.dirname(path0) + '/scripts'
@@ -192,6 +188,44 @@ def ECO2Stations(campaign0,path0):
             #adjustColWidth(wb.get_sheet_by_name(sheetname))
             writer.save()
             writer.close()
+
+        ##### DATOS SUAVIZADOS A 'smoothWinMin' MIN
+    #if file[0:6] != 'CR200X': # ESTE IF ELIMINENLO! ES el q les eliminé sin querer.
+        csSmooth = pd.DataFrame()
+        step = 0
+        flag = True
+        while flag:
+            
+            timeWin = csCont['timestamp'].min() + timedelta(minutes=step*float(inputs['smoothWinMin']))
+            step+=1
+            flag = timeWin < csCont['timestamp'].max()
+            timeDeltaWin = abs(csContTime-timeWin)<pd.Timedelta(float(inputs['smoothWinMin'])/2, unit='m')
+            if any(timeDeltaWin):
+                csContWin = csContData.loc[timeDeltaWin,:]
+                Q1 = csContWin.quantile(0.25)
+                Q3 = csContWin.quantile(0.75)
+                IQR = Q3 - Q1
+                outliers = (csContWin < (Q1 - 1.5 * IQR)) |(csContWin > (Q3 + 1.5 * IQR))
+                csContWin[outliers] = np.nan
+                csWinMedia = csContWin.mean()
+                csWinStd = csContWin.std()
+                csWinCV = csWinStd/csWinMedia*100
+                
+                #csWinStats = [csWinMedia,csWinStd,csWinMedia]
+                
+                csMeasures = list(csContWin.columns.values)
+                for m in csMeasures:
+                    csSmooth.loc[timeWin,m + 'Mean'  ] = csWinMedia[m]
+                    csSmooth.loc[timeWin,m + 'Std'  ] = csWinStd[m]
+                    csSmooth.loc[timeWin,m + 'CV'] = csWinCV[m]
+        # ¿Qué es 'file'? ¿El nombre del archivo? La línea no anda porque nos falta 'file':
+        #sheetname = file[:-4] + 'ContSmooth' + inputs['smoothWinMin'] + 'min'
+        if sheetname in wb.sheetnames:
+            del wb[sheetname]
+        csSmooth.to_excel(writer, index = True, sheet_name=sheetname)
+        #adjustColWidth(wb[sheetname])
+        writer.save()
+        writer.close()
 
 #%%
 
