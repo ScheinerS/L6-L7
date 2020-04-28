@@ -219,7 +219,8 @@ def ECO2Stations(campaign0,path0):
                     csSmooth.loc[timeWin,m + 'Std'  ] = csWinStd[m]
                     csSmooth.loc[timeWin,m + 'CV'] = csWinCV[m]
         # ¿Qué es 'file'? ¿El nombre del archivo? La línea no anda porque nos falta 'file':
-        #sheetname = file[:-4] + 'ContSmooth' + inputs['smoothWinMin'] + 'min'
+        sheetname = 'ECO' + 'ContSmooth' + inputs['smoothWinMin'] + 'min'
+        
         if sheetname in wb.sheetnames:
             del wb[sheetname]
         csSmooth.to_excel(writer, index = True, sheet_name=sheetname)

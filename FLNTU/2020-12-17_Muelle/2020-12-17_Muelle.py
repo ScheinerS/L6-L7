@@ -35,6 +35,7 @@ campaign = 'RdP_20191217_Muelle'
 #%% Continuous:
 
 pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/RdP_20191217_cleaned.xlsx'
+pathECO_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
 
 pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/CR800_I2016.dat'
 
@@ -43,14 +44,15 @@ pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/r
 dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows=0, header=None,usecols=range(0,7))
 dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
 
+dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth1min')
 
-# Hay un bug y esta línea tiene un error:
-#dataECO_Continuous.at[3130,'timestamp']
-dataECO_Continuous.drop(index=[3130], inplace=True)
 dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
 time_ECO_Continuous = dataECO_Continuous['timestamp']
 ntu_ECO_Continuous = dataECO_Continuous['turbidity (NTU)']
+
+time_ECO_Smooth1min = dataECO_Smooth1min['Unnamed: 0']
+ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
 
 time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
 ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
@@ -74,14 +76,15 @@ ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
 plt.figure()
 
 plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orangered', label=r'ECO FLNTU (Smooth1min)')
 plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
-plt.title(r'Continuous (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.title(r'Continuo (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize)
-plt.ylim(0,100)
+plt.ylim(0,300)
 plt.xticks(rotation=25)
 ax=plt.gca()
 xfmt = md.DateFormatter('%H:%M')
