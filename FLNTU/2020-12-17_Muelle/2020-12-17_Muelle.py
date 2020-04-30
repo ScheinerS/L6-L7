@@ -76,7 +76,6 @@ ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
 plt.figure()
 
 plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
-plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orangered', label=r'ECO FLNTU (Smooth1min)')
 plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
@@ -101,6 +100,38 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/' + campaign + '_Continuous.png')
+   
+#%%
+# Gráfico (ECO continuo y suavizado):
+
+plt.figure()
+
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orangered', label=r'ECO FLNTU (Smooth1min)')
+#plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
+plt.ylim(0,300)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/' + campaign + '_Continuo_y_suavizado.png')
 
 #%% Processed
 
