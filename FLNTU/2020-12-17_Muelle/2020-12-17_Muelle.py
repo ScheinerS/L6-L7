@@ -181,7 +181,7 @@ plt.show()
 if Linux:
     plt.savefig(path + '/' + campaign + '.png')
 
-plt.pause(1)
+#plt.pause(1)
 #%% Ajuste:
  
 #def lineal_con_offset(p0,x):
