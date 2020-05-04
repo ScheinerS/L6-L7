@@ -249,5 +249,5 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(new_filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
-pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
-clean(pathCampaign)
+#pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191210_Muelle'
+#clean(pathCampaign)
