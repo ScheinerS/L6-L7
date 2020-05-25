@@ -26,6 +26,14 @@ obs_vs_ntu = np.loadtxt('obs_ss__(fnu)vs_eco_(ntu).csv', skiprows=1, delimiter='
 obs=obs_vs_ntu[0]
 eco=obs_vs_ntu[1]
 
+#%%
+
+# Eliminación de outliers:
+
+
+
+
+#%%
 
 def modelo(x, m, b):
     return m*x

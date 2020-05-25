@@ -189,8 +189,7 @@ def ECO2Stations(campaign0,path0):
             writer.save()
             writer.close()
 
-        ##### DATOS SUAVIZADOS A 'smoothWinMin' MIN
-    #if file[0:6] != 'CR200X': # ESTE IF ELIMINENLO! ES el q les eliminé sin querer.
+
         csSmooth = pd.DataFrame()
         step = 0
         flag = True
@@ -218,7 +217,7 @@ def ECO2Stations(campaign0,path0):
                     csSmooth.loc[timeWin,m + 'Mean'  ] = csWinMedia[m]
                     csSmooth.loc[timeWin,m + 'Std'  ] = csWinStd[m]
                     csSmooth.loc[timeWin,m + 'CV'] = csWinCV[m]
-        # ¿Qué es 'file'? ¿El nombre del archivo? La línea no anda porque nos falta 'file':
+
         sheetname = 'ECO' + 'ContSmooth' + inputs['smoothWinMin'] + 'min'
         
         if sheetname in wb.sheetnames:

@@ -38,6 +38,7 @@ pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/r
 pathECO_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
 
 pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/CR800_I2016.dat'
+pathOBS_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell.xlsx'
 
 # No hay datos en contiuno para el Hach.
 
@@ -45,6 +46,7 @@ dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows
 dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
 
 dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth1min')
+dataOBS_Smooth1min = pd.read_excel(pathOBS_Smooth1min, sheet_name='CR800_I2016ContSmooth1min')
 
 dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
@@ -57,10 +59,9 @@ ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
 time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
 ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
 
-# Convertimos los timestamps del OBS en horarios:
-#for i in range(2,len(time_OBS_Continuous)):
-    # (empezamos en '2' porque eliminamos 0 y 1 antes.)
-#    time_OBS_Continuous[i] = time_OBS_Continuous[i].split(' ')[1]
+time_ECO_Smooth1min = dataECO_Smooth1min['Unnamed: 0']
+ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
+
 
 # Convertimos los tiempos a formato de fecha:
     
