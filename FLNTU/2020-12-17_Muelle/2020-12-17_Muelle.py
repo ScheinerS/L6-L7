@@ -23,7 +23,7 @@ NumberSize = 12
 
 plt.close('all')
 
-if os.name == 'posix':   # Linux
+if os.name == 'posix':
     Linux = True
 
 plt.rc('text', usetex=Linux)
@@ -33,13 +33,15 @@ plt.rc('font', family='serif')
 campaign = 'RdP_20191217_Muelle'
 
 #%% Continuous:
-
+# ECO:
 pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/RdP_20191217_cleaned.xlsx'
 pathECO_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
 
+# OBS:
 pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/CR800_I2016.dat'
 pathOBS_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell.xlsx'
 
+# HACH:
 # No hay datos en contiuno para el Hach.
 
 dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows=0, header=None,usecols=range(0,7))
@@ -50,17 +52,17 @@ dataOBS_Smooth1min = pd.read_excel(pathOBS_Smooth1min, sheet_name='CR800_I2016Co
 
 dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
+# ECO:
 time_ECO_Continuous = dataECO_Continuous['timestamp']
 ntu_ECO_Continuous = dataECO_Continuous['turbidity (NTU)']
-
 time_ECO_Smooth1min = dataECO_Smooth1min['Unnamed: 0']
 ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
 
+# OBS:
 time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
 ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
-
-time_ECO_Smooth1min = dataECO_Smooth1min['Unnamed: 0']
-ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
+time_OBS_Smooth1min = dataOBS_Smooth1min['Unnamed: 0']
+ntu_OBS_Smooth1min = dataOBS_Smooth1min['SS_OBS501_I2016[FNU]Mean']
 
 
 # Convertimos los tiempos a formato de fecha:
@@ -71,8 +73,9 @@ time_OBS_Continuous = pd.to_datetime(time_OBS_Continuous)
 # Pasamos los números a float, porque están como string:
 ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
 
+
 #%%
-# Gráfico (mediciones en continuo):
+# Gráfico (ECO y OBS - mediciones en continuo):
 
 plt.figure()
 
@@ -103,13 +106,15 @@ if Linux:
     plt.savefig(path + '/' + campaign + '_Continuous.png')
    
 #%%
-# Gráfico (ECO continuo y suavizado):
+# Gráfico (ECO y OBS - continuo y suavizado):
 
 plt.figure()
 
 plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
 plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orangered', label=r'ECO FLNTU (Smooth1min)')
-#plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_OBS_Smooth1min, ntu_OBS_Smooth1min, '-', color='darkturquoise', label=r'OBS501 (2016) [SS] (Smooth1min)')
+
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
@@ -133,6 +138,40 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/' + campaign + '_Continuo_y_suavizado.png')
+
+#%%
+# Gráfico (ECO y OBS - suavizado):
+
+plt.figure()
+
+#plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orangered', label=r'ECO FLNTU (Smooth1min)')
+#plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_OBS_Smooth1min, ntu_OBS_Smooth1min, '-', color='darkturquoise', label=r'OBS501 (2016) [SS] (Smooth1min)')
+
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
+plt.ylim(0,300)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/' + campaign + '_suavizados.png')
 
 #%% Processed
 

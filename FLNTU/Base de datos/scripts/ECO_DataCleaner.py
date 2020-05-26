@@ -6,7 +6,7 @@ Este módulo verifica los formatos de las filas del archivo '.raw' que entrega e
 import sys
 import os
 import pandas as pd
-#import numpy as np
+import numpy as np
 #import matplotlib.pyplot as plt
 import datetime
 #import glob
@@ -237,8 +237,18 @@ def clean(pathCampaign):
             file.at[i,'timestamp'] = createTimestamp(L_A['date'], L_A['time'])
             file.at[i,'turbidity (NTU)'] = calibrate_ntu(int(L_A['turbidity_counts']))
             file.at[i,'chl (ug/l)'] = calibrate_fl(int(L_A['chl_counts']))
-        
-
+    
+    #%%
+    # Por último, eliminamos los outliers:    
+    
+    Q1 = file['turbidity (NTU)'].quantile(0.25)
+    Q3 = file['turbidity (NTU)'].quantile(0.75)
+    IQR = Q3 - Q1
+    outliers = (file['turbidity (NTU)'] < (Q1 - 1.5 * IQR)) | (file['turbidity (NTU)'] > (Q3 + 1.5 * IQR))
+    file['turbidity (NTU)'].loc[outliers] = np.nan
+    #%%
+    # Guardamos los datos:
+    
     new_filename = filename + '_cleaned' 
     
     if Save_Excel:
@@ -249,5 +259,6 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(new_filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
-#pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191210_Muelle'
+#%%
+#pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
 #clean(pathCampaign)
