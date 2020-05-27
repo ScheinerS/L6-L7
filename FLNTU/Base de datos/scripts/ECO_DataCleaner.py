@@ -168,7 +168,7 @@ def clean(pathCampaign):
     filename =      pathCampaign.split('/')[-1 ]
     filename = '_'.join(filename.split('_')[:-1])
     
-    CampaignDate =      pathCampaign.split('/')[-1 ].split("_")
+    CampaignDate = pathCampaign.split('/')[-1 ].split("_")
     CampaignDate = CampaignDate[1]
     # Lo pasamos al formato mm/dd/yy:
     CampaignDate = CampaignDate[4:6] + '/' + CampaignDate[6:8] + '/' + CampaignDate[2:4]
@@ -240,12 +240,13 @@ def clean(pathCampaign):
     
     #%%
     # Por último, eliminamos los outliers:    
-    
+    '''
     Q1 = file['turbidity (NTU)'].quantile(0.25)
     Q3 = file['turbidity (NTU)'].quantile(0.75)
     IQR = Q3 - Q1
     outliers = (file['turbidity (NTU)'] < (Q1 - 1.5 * IQR)) | (file['turbidity (NTU)'] > (Q3 + 1.5 * IQR))
     file['turbidity (NTU)'].loc[outliers] = np.nan
+    '''
     #%%
     # Guardamos los datos:
     
@@ -260,5 +261,5 @@ def clean(pathCampaign):
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
 #%%
-#pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
-#clean(pathCampaign)
+pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
+clean(pathCampaign)
