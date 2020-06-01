@@ -18,6 +18,8 @@ sys.path.append(path)
 
 #%%
 
+C_IQR = 1.5
+
 def check_date(date, CampaignDate):
     if date == CampaignDate:
         return True
@@ -240,13 +242,13 @@ def clean(pathCampaign):
     
     #%%
     # Por último, eliminamos los outliers:    
-    '''
+    
     Q1 = file['turbidity (NTU)'].quantile(0.25)
     Q3 = file['turbidity (NTU)'].quantile(0.75)
     IQR = Q3 - Q1
-    outliers = (file['turbidity (NTU)'] < (Q1 - 1.5 * IQR)) | (file['turbidity (NTU)'] > (Q3 + 1.5 * IQR))
+    outliers = (file['turbidity (NTU)'] < (Q1 - C_IQR * IQR)) | (file['turbidity (NTU)'] > (Q3 + C_IQR * IQR))
     file['turbidity (NTU)'].loc[outliers] = np.nan
-    '''
+    
     #%%
     # Guardamos los datos:
     
@@ -260,6 +262,7 @@ def clean(pathCampaign):
         print('Saving as "%s"'%(new_filename + '.csv'))
         file.to_csv(pathCampaign + '/ECO_FLNTU/' + new_filename + '.csv')
 
+print('Done.')
 #%%
 pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
 clean(pathCampaign)

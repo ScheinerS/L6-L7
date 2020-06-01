@@ -26,7 +26,7 @@ plt.close('all')
 if os.name == 'posix':
     Linux = True
 
-plt.rc('text', usetex=Linux)
+plt.rc('text', usetex=False)
 plt.rc('font', family='serif')
 
 
@@ -79,15 +79,16 @@ ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
 
 plt.figure()
 
-plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+
 plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Continuo (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize)
-plt.ylim(0,300)
+#plt.ylim(0,300)
 plt.xticks(rotation=25)
 ax=plt.gca()
 xfmt = md.DateFormatter('%H:%M')
@@ -104,7 +105,43 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/' + campaign + '_Continuous.png')
-   
+
+#%%
+# Gráfico (ECO y OBS - mediciones en continuo: Detalle de las 14:53):
+
+plt.figure()
+
+
+plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Continuo (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize)
+
+t_0 = pd.to_datetime(r'2019-12-17 14:42:00')
+t_f = pd.to_datetime(r'2019-12-17 15:03:00')
+plt.xlim(t_0,t_f)
+
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter(r'%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/' + campaign + '_Continuous-Detalle_14:53.png')
+
 #%%
 # Gráfico (ECO y OBS - continuo y suavizado):
 
@@ -155,7 +192,7 @@ plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
-plt.ylim(0,300)
+#plt.ylim(0,300)
 plt.xticks(rotation=25)
 ax=plt.gca()
 xfmt = md.DateFormatter('%H:%M')
