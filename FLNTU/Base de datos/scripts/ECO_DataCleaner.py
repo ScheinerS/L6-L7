@@ -243,11 +243,13 @@ def clean(pathCampaign):
     #%%
     # Por último, eliminamos los outliers:    
     
-    Q1 = file['turbidity (NTU)'].quantile(0.25)
-    Q3 = file['turbidity (NTU)'].quantile(0.75)
-    IQR = Q3 - Q1
-    outliers = (file['turbidity (NTU)'] < (Q1 - C_IQR * IQR)) | (file['turbidity (NTU)'] > (Q3 + C_IQR * IQR))
-    file['turbidity (NTU)'].loc[outliers] = np.nan
+    for var_str in ['turbidity (NTU)', 'chl (ug/l)']:
+        
+        Q1 = file[var_str].quantile(0.25)
+        Q3 = file[var_str].quantile(0.75)
+        IQR = Q3 - Q1
+        outliers = (file[var_str] < (Q1 - C_IQR * IQR)) | (file[var_str] > (Q3 + C_IQR * IQR))
+        file[var_str].loc[outliers] = np.nan
     
     #%%
     # Guardamos los datos:
