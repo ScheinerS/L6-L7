@@ -66,7 +66,7 @@ time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
 ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
 time_OBS_Smooth1min = dataOBS_Smooth1min['Unnamed: 0']
 ntu_OBS_Smooth1min = dataOBS_Smooth1min['SS_OBS501_I2016[FNU]Mean']
-
+#temp_OBS_Smooth1min = dataOBS_Smooth1min['']
 
 # Convertimos los tiempos a formato de fecha:
     
@@ -232,16 +232,19 @@ dataOBS_CV = pd.read_excel(pathOBS ,sheet_name='Stations_CV',skiprows=1)
 dataHACH_CV = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
 
 ntu_ECO = dataECO_Mean['turbidity (NTU)']
+chl_ECO = dataECO_Mean['chl (ug/l)']
 ntu_OBS = dataOBS_Mean['SS_OBS501_I2016[FNU]']
+temp_OBS = dataOBS_Mean['PTemp_CR800_I2016[DegC]']
 ntu_HACH = dataHACH_Mean['Mean']
 
 # CV: coefficient of variation
 ntu_ECO_err = dataECO_Mean['turbidity (NTU)'] * dataECO_CV['turbidity (NTU)']/100
+chl_ECO_err = dataECO_Mean['chl (ug/l)'] * dataECO_CV['chl (ug/l)']/100
 ntu_OBS_err = dataOBS_Mean['SS_OBS501_I2016[FNU]'] * dataOBS_CV['SS_OBS501_I2016[FNU]']/100
 ntu_HACH_err = dataHACH_Mean['Mean'] * dataHACH_CV['CV[%]']/100
 
 #%%
-# Gráfico:
+# Gráfico (turbidez - estaciones):
 
 plt.figure()
 
@@ -252,16 +255,104 @@ plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
 plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
 
 plt.legend(loc='best', fontsize=LegendSize)
-plt.title(r'Turbidity (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.title(r'(2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'Station (STxx)', fontsize=AxisLabelSize)
 plt.ylabel(r'Turbidity (NTU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
 if Linux:
-    plt.savefig(path + '/' + campaign + '.png')
+    plt.savefig(path + '/' + campaign + '-turbidez.png')
 
-#plt.pause(1)
+#%%
+# Gráfico (chl(station) - estaciones):
+
+plt.figure()
+
+stations = range(1,13)
+
+plt.plot(stations,chl_ECO, '-o', color='green', label=r'ECO FLNTU - chl')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'Station (STxx)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g /l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl.png')
+
+#%%
+# Gráfico (chl(temp) - estaciones):
+
+plt.figure()
+
+plt.plot(temp_OBS,chl_ECO, 'o', color='green', label=r'ECO FLNTU - chl')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'Temperatura ($^{\circ} C$)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl(T).png')
+
+#%%
+# Gráfico (chl(eco_turbidez) - Continuo):
+
+plt.figure()
+
+plt.plot(ntu_ECO_Continuous,chl_ECO_Continuous, 'o', color='green', label=r'ECO FLNTU - chl')
+plt.plot(ntu_ECO,chl_ECO, 'o', color='black', label=r'Stations')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL - Continuo (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'ECO - Turbidez (NTU)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_ECO)_Continuo.png')
+
+#%%
+# Gráfico (chl(eco_turbidez) - Smooth-1min):
+
+plt.figure()
+
+plt.plot(ntu_ECO_Smooth1min,chl_ECO_Smooth1min, 'o', color='green', label=r'ECO FLNTU - chl')
+plt.plot(ntu_ECO,chl_ECO, 'o', color='black', label=r'Stations')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL - Smooth1min (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'ECO - Turbidez (NTU)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_ECO)_Smooth1min.png')
+
+#%%
+# Gráfico (chl(obs_turbidez) - Smooth-1min):
+
+plt.figure()
+
+#plt.plot(ntu_OBS_Smooth1min,chl_ECO_Smooth1min, 'o', color='green', label=r'ECO FLNTU - chl')
+#plt.plot(ntu_OBS,chl_ECO, 'o', color='black', label=r'Stations')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL - Smooth1min (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'OBS - Turbidez (FNU)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_OBS)_Smooth1min.png')
 #%% Ajuste:
  
 #def lineal_con_offset(p0,x):
@@ -343,7 +434,7 @@ if Linux:
 
 plt.figure()
 
-plt.plot(time_ECO_Continuous, chl_ECO_Continuous, '-', color='darkgreen', label=r'ECO FLNTU (chl)')
+plt.plot(time_ECO_Continuous, chl_ECO_Continuous, '-', color='darkgreen', label=r'ECO FLNTU (Continuo)')
 plt.plot(time_ECO_Smooth1min, chl_ECO_Smooth1min, '-', color='lime', label=r'ECO FLNTU (Smooth1min)')
 
 #plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
@@ -351,7 +442,7 @@ plt.plot(time_ECO_Smooth1min, chl_ECO_Smooth1min, '-', color='lime', label=r'ECO
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
 plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
-plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
 #plt.ylim(0,300)
 plt.xticks(rotation=25)
 ax=plt.gca()
@@ -368,6 +459,6 @@ plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
 if Linux:
-    plt.savefig(path + '/' + campaign + '_CHL_Continuo_y_suavizado.png')
+    plt.savefig(path + '/Clorofila/' + campaign + '_CHL_Continuo_y_suavizado.png')
 
 #%%
