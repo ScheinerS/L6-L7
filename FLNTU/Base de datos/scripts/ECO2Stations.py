@@ -26,7 +26,7 @@ sys.path.append(pathModules)
 
 import ECO_DataCleaner as DC
 
-campaign0 = 'RdP_20191210_Muelle'
+campaign0 = 'RdP_20191217_Muelle'
 
 #%%
 def ECO2Stations(campaign0,path0):
@@ -229,7 +229,5 @@ def ECO2Stations(campaign0,path0):
 
 #%%
 
-# CORRO LA FUNCIÓN. BORRAR ESTE BLOQUE CUANDO ESTÉ TERMINADO.
-
-ECO2Stations(campaign0,path0)
-
+if __name__ == "__main__":
+    ECO2Stations(campaign0,path0)
