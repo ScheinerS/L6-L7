@@ -266,5 +266,7 @@ def clean(pathCampaign):
 
 print('Done.')
 #%%
-pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
-clean(pathCampaign)
+
+if __name__ == "__main__":
+    pathCampaign = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle'
+    clean(pathCampaign)
