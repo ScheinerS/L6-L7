@@ -38,19 +38,52 @@ pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/r
 pathECO_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
 
 # OBS:
-pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/CR800_I2016.dat'
+pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/RdP_20191217_cleaned.xlsx'
 pathOBS_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell.xlsx'
 
 # HACH:
 # No hay datos en contiuno para el Hach.
 
 dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows=0, header=None,usecols=range(0,7))
-dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
+dataOBS_Continuous = pd.read_excel(pathOBS_Continuous)#, delimiter=",", skiprows=1)
+# dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
 
-dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth1min')
+
+dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth5min')
 dataOBS_Smooth1min = pd.read_excel(pathOBS_Smooth1min, sheet_name='CR800_I2016ContSmooth1min')
 
 dataOBS_Continuous.drop(index=[0,1], inplace=True)
+
+#%%
+
+# Recorte de los momentos en que los instrumentos están fuera del agua:
+
+# ESTO SE PODRÍA PEGAR DESPUÉS EN EL DEFINITIVO. CONSULTARLE A JUANCHO DÓNDE.
+'''
+date = campaign.split('_')[1]
+date_year = date[0:4]
+date_month = date[4:6]
+date_day = date[6:8]
+date = date_year + '-' + date_month + '-' + date_day
+
+path_IN_OUT = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/ECO_FLNTU_IN_OUT'
+IN_OUT = pd.read_csv(path_IN_OUT, sep='\t')
+#date = IN_OUT[]
+
+for i in range(len(IN_OUT)):
+    # Bloques que hay que eliminar:
+    start_remove = pd.to_datetime(date + ' ' + IN_OUT['OUT'].at[i])
+    end_remove = pd.to_datetime(date + ' ' + IN_OUT['IN'].at[i])
+    
+    print('Removing data:\n', start_remove,'\t-->\t',end_remove)
+    
+    for t in range(2,len(dataOBS_Continuous)):
+        timestamp = pd.to_datetime(dataOBS_Continuous.at[t,'TIMESTAMP'])
+        if (timestamp>start_remove and timestamp<end_remove):
+            dataOBS_Continuous.at[t] = np.nan   # Elimina toda la línea.
+
+'''
+#%%
 
 # ECO:
 time_ECO_Continuous = dataECO_Continuous['timestamp']
@@ -75,7 +108,6 @@ time_OBS_Continuous = pd.to_datetime(time_OBS_Continuous)
 
 # Pasamos los números a float, porque están como string:
 ntu_OBS_Continuous = pd.to_numeric(ntu_OBS_Continuous)
-
 
 #%%
 # Gráfico (ECO y OBS - mediciones en continuo):
@@ -462,3 +494,87 @@ if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '_CHL_Continuo_y_suavizado.png')
 
 #%%
+# Gráfico (ECO(CHL), ECO(T), OBS(T), HACH(T) - continuo):
+
+#plt.figure()
+
+
+fig, ax1 = plt.subplots()
+
+ax1.set_xlabel(r'UTC Time', fontsize=AxisLabelSize)
+ax1.set_ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize, color='black')
+
+plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO - T')
+ax1.tick_params(axis='y', labelcolor='black')
+plt.legend(loc='upper left', fontsize=LegendSize)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+ax2.set_ylabel('CHL ($\mu g / l$)', color='darkgreen')  # we already handled the x-label with ax1
+
+plt.plot(time_ECO_Continuous, chl_ECO_Continuous, '-', color='darkgreen', label=r'ECO - CHL')
+ax2.tick_params(axis='y', labelcolor='darkgreen')
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+
+plt.legend(loc='lower right', fontsize=LegendSize)
+#plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+#plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+#plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+#plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '_Todo_Continuo.png')
+
+#%%
+# Gráfico (ECO(CHL), ECO(T), OBS(T), HACH(T) - Smooth1min):
+
+#plt.figure()
+
+
+fig, ax1 = plt.subplots()
+
+ax1.set_xlabel(r'UTC Time', fontsize=AxisLabelSize)
+ax1.set_ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize, color='black')
+
+plt.plot(time_OBS_Smooth1min, ntu_OBS_Smooth1min, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_ECO_Smooth1min, ntu_ECO_Smooth1min, '-', color='orange', label=r'ECO - T')
+ax1.tick_params(axis='y', labelcolor='black')
+plt.legend(loc='best', fontsize=LegendSize)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+ax2.set_ylabel('CHL ($\mu g / l$)', color='darkgreen')  # we already handled the x-label with ax1
+
+plt.plot(time_ECO_Smooth1min, chl_ECO_Smooth1min, '-', color='darkgreen', label=r'ECO - CHL')
+ax2.tick_params(axis='y', labelcolor='darkgreen')
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+
+plt.legend(loc='lower right', fontsize=LegendSize)
+#plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+#plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+#plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+#plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '_Todo_Smooth1min.png')
