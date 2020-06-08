@@ -616,5 +616,5 @@ plt.show()
 
 
 if Linux:
-    plt.savefig(path + '/Clorofila/' + campaign + '-Todo_estaciones.png')
+    plt.savefig(path + '/Clorofila/' + campaign + '_Todo_estaciones.png')
     
