@@ -31,7 +31,7 @@ def clean(pathCampaign):
     
 
     Save_Excel = True # Para guardar en formato '.xlsx'
-    Save_CSV = False # Para guardar en formato '.csv'
+    Save_CSV = True # Para guardar en formato '.csv'
     
     #data = {}   # Diccionario con los DataFrames de cada archivo. 
     
@@ -39,8 +39,8 @@ def clean(pathCampaign):
     file = pathCampaign + '/campbellContinuous/' + 'CR800_I2016.dat'
     
     data = pd.DataFrame()
-    data = pd.read_csv(file, delimiter=",", skiprows=[0]) 
-    data = data.drop([0, 1])
+    data = pd.read_csv(file, delimiter=",")#, skiprows=[0]) 
+    #data = data.drop([0])
     
     #%%
     date = pathCampaign.split('_')[1]
@@ -78,7 +78,7 @@ def clean(pathCampaign):
          
     if Save_CSV:
         print('Saving as "%s"'%(new_filename + '.csv'))
-        data.to_csv(pathCampaign + '//' + new_filename + '.csv')
+        data.to_csv(pathCampaign + '/campbellContinuous/' + new_filename + '.csv')
     
     print('Done.')
 #%%

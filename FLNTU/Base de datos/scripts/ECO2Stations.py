@@ -24,7 +24,8 @@ path0 = os.path.dirname(path0) + '/Datos'
 
 sys.path.append(pathModules)
 
-import ECO_DataCleaner as DC
+import ECO_DataCleaner as ECO_DC
+#import OBS_DataCleaner as OBS_DC
 
 campaign0 = 'RdP_20191217_Muelle'
 
@@ -56,7 +57,9 @@ def ECO2Stations(campaign0,path0):
                    inputs[key] = inputs[key][0]
         
         # Limpiamos el archivo del ECO:
-        DC.clean(pathCampaign)
+        ECO_DC.clean(pathCampaign)
+        #OBS_DC.clean(pathCampaign)
+        
     except:
         print('No ECO Input file or no ECO measurements for this campaign!')
 #        return
