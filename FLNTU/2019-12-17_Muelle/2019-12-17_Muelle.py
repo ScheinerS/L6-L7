@@ -578,3 +578,43 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '_Todo_Smooth1min.png')
+
+#%%
+# Gráfico (chl(station) - estaciones):
+
+fig, ax1 = plt.subplots()
+
+ax1.set_xlabel(r'UTC Time', fontsize=AxisLabelSize)
+ax1.set_ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize, color='black')
+
+
+plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
+plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+ax1.tick_params(axis='y', labelcolor='black')
+plt.legend(loc='best', fontsize=LegendSize)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+ax2.set_ylabel('CHL ($\mu g / l$)', color='darkgreen')  # we already handled the x-label with ax1
+
+plt.plot(stations,chl_ECO, '-o', color='green', label=r'ECO FLNTU - chl')
+ax2.tick_params(axis='y', labelcolor='darkgreen')
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+
+plt.legend(loc='center left', fontsize=LegendSize)
+#plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+#plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+#plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+
+
+#plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-Todo_estaciones.png')
+    
