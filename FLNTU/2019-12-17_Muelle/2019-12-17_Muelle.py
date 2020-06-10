@@ -36,10 +36,12 @@ campaign = 'RdP_20191217_Muelle'
 # ECO:
 pathECO_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/RdP_20191217_cleaned.xlsx'
 pathECO_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU.xlsx'
+pathECO_Smooth5min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTUProcessed/RdP_20191217_ECO-FLNTU_5MIN.xlsx'
 
 # OBS:
 pathOBS_Continuous = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellContinuous/RdP_20191217_cleaned.xlsx'
 pathOBS_Smooth1min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell.xlsx'
+pathOBS_Smooth5min = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/campbellProcessed/RdP_20191217_Campbell_5MIN.xlsx'
 
 # HACH:
 # No hay datos en contiuno para el Hach.
@@ -48,41 +50,15 @@ dataECO_Continuous = pd.read_excel(pathECO_Continuous)#,delimiter="\t", skiprows
 dataOBS_Continuous = pd.read_excel(pathOBS_Continuous)#, delimiter=",", skiprows=1)
 # dataOBS_Continuous = pd.read_csv(pathOBS_Continuous, delimiter=",", skiprows=1)
 
-
-dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth5min')
+# Suavizados:
+dataECO_Smooth1min = pd.read_excel(pathECO_Smooth1min, sheet_name='ECOContSmooth1min')
 dataOBS_Smooth1min = pd.read_excel(pathOBS_Smooth1min, sheet_name='CR800_I2016ContSmooth1min')
+
+dataECO_Smooth5min = pd.read_excel(pathECO_Smooth5min, sheet_name='ECOContSmooth5min')
+dataOBS_Smooth5min = pd.read_excel(pathOBS_Smooth5min, sheet_name='CR800_I2016ContSmooth5min')
 
 dataOBS_Continuous.drop(index=[0,1], inplace=True)
 
-#%%
-
-# Recorte de los momentos en que los instrumentos están fuera del agua:
-
-# ESTO SE PODRÍA PEGAR DESPUÉS EN EL DEFINITIVO. CONSULTARLE A JUANCHO DÓNDE.
-'''
-date = campaign.split('_')[1]
-date_year = date[0:4]
-date_month = date[4:6]
-date_day = date[6:8]
-date = date_year + '-' + date_month + '-' + date_day
-
-path_IN_OUT = '/home/santiago/Documents/L6-L7/FLNTU/Base de datos/Datos/regions/RdP/RdP_20191217_Muelle/ECO_FLNTU/ECO_FLNTU_IN_OUT'
-IN_OUT = pd.read_csv(path_IN_OUT, sep='\t')
-#date = IN_OUT[]
-
-for i in range(len(IN_OUT)):
-    # Bloques que hay que eliminar:
-    start_remove = pd.to_datetime(date + ' ' + IN_OUT['OUT'].at[i])
-    end_remove = pd.to_datetime(date + ' ' + IN_OUT['IN'].at[i])
-    
-    print('Removing data:\n', start_remove,'\t-->\t',end_remove)
-    
-    for t in range(2,len(dataOBS_Continuous)):
-        timestamp = pd.to_datetime(dataOBS_Continuous.at[t,'TIMESTAMP'])
-        if (timestamp>start_remove and timestamp<end_remove):
-            dataOBS_Continuous.at[t] = np.nan   # Elimina toda la línea.
-
-'''
 #%%
 
 # ECO:
@@ -92,7 +68,9 @@ chl_ECO_Continuous = dataECO_Continuous['chl (ug/l)']
 time_ECO_Smooth1min = dataECO_Smooth1min['Unnamed: 0']
 ntu_ECO_Smooth1min = dataECO_Smooth1min['turbidity (NTU)Mean']
 chl_ECO_Smooth1min = dataECO_Smooth1min['chl (ug/l)Mean']
-
+time_ECO_Smooth5min = dataECO_Smooth5min['Unnamed: 0']
+ntu_ECO_Smooth5min = dataECO_Smooth5min['turbidity (NTU)Mean']
+chl_ECO_Smooth5min = dataECO_Smooth5min['chl (ug/l)Mean']
 
 # OBS:
 time_OBS_Continuous = dataOBS_Continuous['TIMESTAMP']
@@ -100,6 +78,8 @@ ntu_OBS_Continuous = dataOBS_Continuous['SS_OBS501_I2016']
 time_OBS_Smooth1min = dataOBS_Smooth1min['Unnamed: 0']
 ntu_OBS_Smooth1min = dataOBS_Smooth1min['SS_OBS501_I2016[FNU]Mean']
 #temp_OBS_Smooth1min = dataOBS_Smooth1min['']
+time_OBS_Smooth5min = dataOBS_Smooth5min['Unnamed: 0']
+ntu_OBS_Smooth5min = dataOBS_Smooth5min['SS_OBS501_I2016[FNU]Mean']
 
 # Convertimos los tiempos a formato de fecha:
     
@@ -178,7 +158,7 @@ if Linux:
     plt.savefig(path + '/' + campaign + '_Continuous-Detalle_14:53.png')
 
 #%%
-# Gráfico (ECO y OBS - continuo y suavizado):
+# Gráfico (ECO y OBS - continuo y suavizado 1 min):
 
 plt.figure()
 
@@ -209,10 +189,10 @@ plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
 if Linux:
-    plt.savefig(path + '/' + campaign + '_Continuo_y_suavizado.png')
+    plt.savefig(path + '/' + campaign + '_Continuo_y_suavizado_1MIN.png')
 
 #%%
-# Gráfico (ECO y OBS - suavizado):
+# Gráfico (ECO y OBS - suavizado 1 min):
 
 plt.figure()
 
@@ -243,7 +223,75 @@ plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
 if Linux:
-    plt.savefig(path + '/' + campaign + '_suavizados.png')
+    plt.savefig(path + '/' + campaign + '_suavizados_1MIN.png')
+
+#%%
+# Gráfico (ECO y OBS - continuo y suavizado 5 min):
+
+plt.figure()
+
+plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_ECO_Smooth5min, ntu_ECO_Smooth5min, '-', color='orangered', label=r'ECO FLNTU (Smooth5min)')
+plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_OBS_Smooth5min, ntu_OBS_Smooth5min, '-', color='darkturquoise', label=r'OBS501 (2016) [SS] (Smooth5min)')
+
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Suavizado: 5 minutos (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
+#plt.ylim(0,300)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/' + campaign + '_Continuo_y_suavizado_5MIN.png')
+
+#%%
+# Gráfico (ECO y OBS - suavizado 5 min):
+
+plt.figure()
+
+#plt.plot(time_ECO_Continuous, ntu_ECO_Continuous, '-', color='orange', label=r'ECO FLNTU')
+plt.plot(time_ECO_Smooth5min, ntu_ECO_Smooth5min, '-', color='orangered', label=r'ECO FLNTU (Smooth5min)')
+#plt.plot(time_OBS_Continuous, ntu_OBS_Continuous, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_OBS_Smooth5min, ntu_OBS_Smooth5min, '-', color='darkturquoise', label=r'OBS501 (2016) [SS] (Smooth5min)')
+
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Suavizado: 5 minutos (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'ECO (NTU)', fontsize=AxisLabelSize)
+#plt.ylim(0,300)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/' + campaign + '_suavizados_5MIN.png')
 
 #%% Processed
 
@@ -369,6 +417,24 @@ if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_ECO)_Smooth1min.png')
 
 #%%
+# Gráfico (chl(eco_turbidez) - Smooth-5min):
+
+plt.figure()
+
+plt.plot(ntu_ECO_Smooth5min,chl_ECO_Smooth5min, 'o', color='green', label=r'ECO FLNTU - chl')
+plt.plot(ntu_ECO,chl_ECO, 'o', color='black', label=r'Stations')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'CHL - Smooth5min (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'ECO - Turbidez (NTU)', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_ECO)_Smooth5min.png')
+
+#%%
 # Gráfico (chl(obs_turbidez) - Smooth-1min):
 
 plt.figure()
@@ -385,6 +451,7 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '-chl(Turb_OBS)_Smooth1min.png')
+
 #%% Ajuste:
  
 #def lineal_con_offset(p0,x):
@@ -462,7 +529,7 @@ plt.show()
 if Linux:
     plt.savefig(path + '/' + campaign + '_HACH-ECO' +  '.png')
 #%%
-# Gráfico (ECO - Clorofila - continuo y suavizado):
+# Gráfico (ECO - Clorofila - continuo y suavizado 1 min):
 
 plt.figure()
 
@@ -492,6 +559,38 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '_CHL_Continuo_y_suavizado.png')
+
+#%%
+# Gráfico (ECO - Clorofila - continuo y suavizado 5 min):
+
+plt.figure()
+
+plt.plot(time_ECO_Continuous, chl_ECO_Continuous, '-', color='darkgreen', label=r'ECO FLNTU (Continuo)')
+plt.plot(time_ECO_Smooth5min, chl_ECO_Smooth5min, '-', color='lime', label=r'ECO FLNTU (Smooth5min)')
+
+#plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
+
+plt.legend(loc='best', fontsize=LegendSize)
+plt.title(r'Suavizado: 5 minutos (2019-12-17 - Muelle)', fontsize=TitleSize)
+plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+#plt.ylim(0,300)
+plt.xticks(rotation=25)
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+# Anotaciones en el gráfico:
+#plt.arrow(20, 0, 10, 10)
+#plt.annotate(s, (x,y))     # s: anotación, (x,y): coordenadas
+
+plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '_CHL_Continuo_y_suavizado_5MIN.png')
 
 #%%
 # Gráfico (ECO(CHL), ECO(T), OBS(T), HACH(T) - continuo):
@@ -578,6 +677,50 @@ plt.show()
 
 if Linux:
     plt.savefig(path + '/Clorofila/' + campaign + '_Todo_Smooth1min.png')
+
+#%%
+# Gráfico (ECO(CHL), ECO(T), OBS(T), HACH(T) - Smooth5min):
+
+    # Seguir desde acá.
+    
+
+
+fig, ax1 = plt.subplots()
+
+ax1.set_xlabel(r'UTC Time', fontsize=AxisLabelSize)
+ax1.set_ylabel(r'ECO (NTU), OBS (FNU)', fontsize=AxisLabelSize, color='black')
+
+plt.plot(time_OBS_Smooth5min, ntu_OBS_Smooth5min, '-', color='blue', label=r'OBS501 (2016) [SS]')
+plt.plot(time_ECO_Smooth5min, ntu_ECO_Smooth5min, '-', color='orange', label=r'ECO - T')
+ax1.tick_params(axis='y', labelcolor='black')
+plt.legend(loc='best', fontsize=LegendSize)
+
+ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+ax2.set_ylabel('CHL ($\mu g / l$)', color='darkgreen')  # we already handled the x-label with ax1
+
+plt.plot(time_ECO_Smooth5min, chl_ECO_Smooth5min, '-', color='darkgreen', label=r'ECO - CHL')
+ax2.tick_params(axis='y', labelcolor='darkgreen')
+
+fig.tight_layout()  # otherwise the right y-label is slightly clipped
+plt.show()
+
+plt.legend(loc='lower right', fontsize=LegendSize)
+#plt.title(r'Suavizado: 1 minuto (2019-12-17 - Muelle)', fontsize=TitleSize)
+#plt.xlabel(r'UTC Time', fontsize=AxisLabelSize)
+#plt.ylabel(r'CHL ($\mu g / l$)', fontsize=AxisLabelSize)
+
+ax=plt.gca()
+xfmt = md.DateFormatter('%H:%M')
+#xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
+ax.xaxis.set_major_formatter(xfmt)
+
+#plt.locator_params(axis='y', nbins=8)
+plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+plt.show()
+
+
+if Linux:
+    plt.savefig(path + '/Clorofila/' + campaign + '_Todo_Smooth5min.png')
 
 #%%
 # Gráfico (chl(station) - estaciones):
