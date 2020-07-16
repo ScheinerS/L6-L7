@@ -30,7 +30,7 @@ rcParams['axes.prop_cycle'] = cycler(color=cmap(np.linspace(0, 1, N_curvas)))
 
 path_datos = path + '/Datos/'
 
-
+CV_threshold = 20
 
 #%%
 filenames = {'Trios': 'RdP_20191217_Trios_QC_RhowStd750_SatSensors.xlsx', 'ECO': 'RdP_20191217_ECO-FLNTU.xlsx', 'OBS': 'RdP_20191217_Campbell.xlsx', 'HACH': 'RdP_20191217.xlsx'}
@@ -43,14 +43,12 @@ pathOBS = path_datos + filenames['OBS']
 pathHACH = path_datos + filenames['HACH']
 
 # Data:
-data_Trios = pd.read_excel(path_Trios, sheet_name='Rhow', skiprows=1)
-
-
-
+data_Trios_Mean = pd.read_excel(path_Trios, sheet_name='Rhow', skiprows=1)
 dataECO_Mean = pd.read_excel(pathECO ,sheet_name='Stations_Mean',skiprows=1)
 dataOBS_Mean = pd.read_excel(pathOBS ,sheet_name='Stations_Mean',skiprows=1)
 dataHACH_Mean = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
 
+data_Trios_CV = pd.read_excel(path_Trios, sheet_name='TriosStats', skiprows=1)
 dataECO_CV = pd.read_excel(pathECO ,sheet_name='Stations_CV',skiprows=1)
 dataOBS_CV = pd.read_excel(pathOBS ,sheet_name='Stations_CV',skiprows=1)
 dataHACH_CV = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
@@ -72,8 +70,8 @@ rho = {}
 
 #longitudes = [645, 859]
 
-rho[645] = data_Trios['645.0']
-rho[860] = data_Trios['860.0']
+rho[645] = data_Trios_Mean['645.0']
+rho[860] = data_Trios_Mean['860.0']
 
 
 
@@ -84,8 +82,13 @@ C = {645: 0.1641, 860: 0.2112}
 T = {}
 
 for l in longitudes:
-    T[l] = (A[l]*rho[l])/((1-rho[l])/C[l])
+    T[l] = (A[l]*rho[l])/(1-rho[l]/C[l])
 
+# Filtramos los que tengan CV>30%:
+for l in longitudes:
+    for i in range(len(T[l])):
+        if data_Trios_CV['MaxCV400:900 [%]'][i]>CV_threshold:
+            T[l].at[i] = None
 
 
 #%%
@@ -96,7 +99,7 @@ plt.figure()
 stations = range(1,13)
 
 for l in longitudes:
-    plt.plot(stations,T[l], '-o', label=r'Trios ($\lambda = %d)$'%l)
+    plt.plot(stations,T[l], '-o', label=r'Trios ($\lambda = %d$ nm)'%l)
 
 plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
 plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
