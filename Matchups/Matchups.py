@@ -6,6 +6,7 @@ from matplotlib import rcParams, cycler
 #import csv
 import numpy as np
 import pandas as pd
+from scipy.optimize import curve_fit
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
@@ -125,16 +126,28 @@ for Campaign in filenames.keys():
     # Gráfico (turbidez - estaciones):
     
     plt.figure()
-    
+#    plt.figure(figsize = (6,6))
     stations = range(len(ntu_ECO)) # Cantidad de estaciones.
     
     IMG_colours = {645: 'black', 860: 'darkgray'}
+    '''
+    IMG_shapes = {'GW94-SWIR12': 'o',
+                  'GW94-SWIR13': 's',
+                  'GW94-SWIR23': '^',
+                  'PCA-SWIR12': '*',
+                  'PCA-SWIR13': '+',
+                  'PCA-SWIR23': 'x',
+                  'PCA-SWIR123': '2'}
+    '''
+    IMG_shapes = ['o', 's', '^', '*', '+', 'x', '2']
+    Algoritmos = ['GW94-SWIR12', 'GW94-SWIR13', 'GW94-SWIR23', 'PCA-SWIR12', 'PCA-SWIR13', 'PCA-SWIR23', 'PCA-SWIR123']
     
     for l in longitudes:
         plt.plot(stations,T[l], '-o', label=r'Trios ($\lambda = %d$ nm)'%l)
-
-        st = np.ones(len(T_IMG[l]))*stations_IMG[Campaign]
-        plt.plot(st, T_IMG[l], 'o', color = IMG_colours[l], label=r'IMG ($\lambda = %d$ nm)'%l)
+        
+        for j in range(len(T_IMG[l])):
+            st = stations_IMG[Campaign]
+            plt.plot(st, T_IMG[l][j], marker = IMG_shapes[j], color = IMG_colours[l])#, label=r'%s($\lambda = %d$ nm)'%(Algoritmos[j],l))
     
     
     plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
@@ -142,6 +155,7 @@ for Campaign in filenames.keys():
     plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
     
     plt.legend(loc='best', fontsize=LegendSize)
+#    plt.legend(loc=(1.04,0), fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'Estación (STxx)', fontsize=AxisLabelSize)
     plt.ylabel(r'Turbidez (NTU)', fontsize=AxisLabelSize)
@@ -150,3 +164,58 @@ for Campaign in filenames.keys():
     
     if Linux:
         plt.savefig(path + '/' + '[%s] Trios.png'%Campaign)
+
+#%% HACH vs Trios
+    
+    N_curvas = 3    # cantidad de curvas
+    cmap = plt.cm.summer #coolwarm, viridis, plasma, inferno, magma, cividis
+    rcParams['axes.prop_cycle'] = cycler(color=cmap(np.linspace(0, 1, N_curvas)))
+    
+    def lineal(x, a, b):
+        return a*x+ b
+    
+    parametros_iniciales = [1,0]
+    
+    def Ajustar(x,y):    
+        popt, pcov = curve_fit(lineal, x, y, p0=parametros_iniciales, check_finite=True)    
+        
+        pstd = np.sqrt(np.diag(pcov))
+        nombres_de_param = ['a', 'b']
+        
+        print('Resultado del ajuste:\n')
+        for c, v in enumerate(popt):
+            print('%s = %5.4f ± %5.4f' % (nombres_de_param[c], v, pstd[c]/2))
+        
+        return popt
+
+    # Gráfico:
+    fig = plt.figure()
+    ax = fig.add_subplot()
+
+    ax.set_aspect('equal')
+    
+    x = np.linspace(0, 65, 10)
+    
+    plt.plot(x, x, '--k', label=r'$y=x$')
+    
+    for l in longitudes:
+        #[a, b] = Ajustar(ntu_HACH,T[l])
+        
+        plt.plot(ntu_HACH, T[l], 'o', label=r'Trios ($\lambda = %d$ nm)'%l)
+        #plt.plot(x, lineal(x, a, b), '-', label=r'$%g x + %g$'%(a,b))
+        for j in range(len(T_IMG[l])):
+            st = stations_IMG[Campaign]
+            plt.plot(ntu_HACH[st], T_IMG[l][j], marker = IMG_shapes[j], color = IMG_colours[l], label=r'%s($\lambda = %d$ nm)'%(Algoritmos[j],l))
+
+        #plt.plot(ntu_HACH[st], T_IMG[l], 'o', color = IMG_colours[l], label=r'IMG ($\lambda = %d$ nm)'%l)
+
+    
+    #plt.legend(loc=(1.04,0), fontsize=LegendSize)
+    plt.title(r'%s'%Campaign, fontsize=TitleSize)
+    plt.xlabel(r'HACH (NTU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'Trios (NTU)', fontsize=AxisLabelSize)
+    plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
+    plt.show()
+    
+    if Linux:
+        plt.savefig(path + '/' + '[%s] HACH_vs_Trios.png'%Campaign)
