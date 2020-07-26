@@ -188,8 +188,9 @@ for Campaign in filenames.keys():
     
     plt.plot(stations,T_Trios, '-o', color='seagreen', label=r'Trios')
     
-    for i in range(len(Algoritmos)):
-        plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
+    # Sacamos los puntos de IMG del gráfico:
+    #for i in range(len(Algoritmos)):
+    #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
     plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
     plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
@@ -203,7 +204,7 @@ for Campaign in filenames.keys():
     plt.show()
     
     if Linux:
-        plt.savefig(path + '/' + '[%s] Trios.png'%Campaign)
+        plt.savefig(path + '/Algoritmo-Trios/' + '[%s] Trios.png'%Campaign)
 
     ############################################################
     
@@ -255,4 +256,4 @@ for Campaign in filenames.keys():
     plt.show()
     
     if Linux:
-        plt.savefig(path + '/' + '[%s] HACH_vs_Trios.png'%Campaign)
+        plt.savefig(path + '/Algoritmo-IMG/' + '[%s] HACH_vs_Trios.png'%Campaign)
