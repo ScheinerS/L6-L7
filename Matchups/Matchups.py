@@ -13,7 +13,7 @@ sys.path.append(path)
 
 TitleSize = 15
 AxisLabelSize = 15
-LegendSize = 10
+LegendSize = 8
 NumberSize = 12
 
 plt.close('all')
@@ -168,12 +168,7 @@ for Campaign in filenames.keys():
     Filtrar(IMGstation, T_IMG, CV_threshold)
     
     ############################################################
-                
-    # Para una transición suave de colores entre las curvas:
-    N_curvas = 3    # cantidad de curvas
-    cmap = plt.cm.summer #coolwarm, viridis, plasma, inferno, magma, cividis
-    rcParams['axes.prop_cycle'] = cycler(color=cmap(np.linspace(0, 1, N_curvas)))
-
+    
     # Gráfico (turbidez - estaciones):
     
     plt.figure()
@@ -188,18 +183,19 @@ for Campaign in filenames.keys():
                   'PCA-SWIR23': 'x',
                   'PCA-SWIR123': '2'}
     '''
-    #IMG_shapes = ['o', 's', '^', '*', '+', 'x', '2']
+    IMG_shapes = ['o', 's', '^', '*', '+', 'x', '2']
     Algoritmos = ['GW94-SWIR12', 'GW94-SWIR13', 'GW94-SWIR23', 'PCA-SWIR12', 'PCA-SWIR13', 'PCA-SWIR23', 'PCA-SWIR123']
     
-    plt.plot(stations,T_Trios, '-o', label=r'Trios')
-    plt.plot(IMGstation,T_IMG, 'o', label=r'IMG')
+    plt.plot(stations,T_Trios, '-o', color='seagreen', label=r'Trios')
+    
+    for i in range(len(Algoritmos)):
+        plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
     plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
     plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
     plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
     
     plt.legend(loc='best', fontsize=LegendSize)
-#    plt.legend(loc=(1.04,0), fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'Estación (STxx)', fontsize=AxisLabelSize)
     plt.ylabel(r'Turbidez (NTU)', fontsize=AxisLabelSize)
@@ -209,11 +205,9 @@ for Campaign in filenames.keys():
     if Linux:
         plt.savefig(path + '/' + '[%s] Trios.png'%Campaign)
 
-#%% HACH vs Trios
+    ############################################################
     
-    N_curvas = 3    # cantidad de curvas
-    cmap = plt.cm.summer #coolwarm, viridis, plasma, inferno, magma, cividis
-    rcParams['axes.prop_cycle'] = cycler(color=cmap(np.linspace(0, 1, N_curvas)))
+    #HACH vs Trios
     
     def lineal(x, a, b):
         return a*x+ b
@@ -243,11 +237,17 @@ for Campaign in filenames.keys():
     plt.plot(x, x, '--k', label=r'$y=x$')
     
     #[a, b] = Ajustar(ntu_HACH,T[l])
-        
-    plt.plot(ntu_HACH, T_Trios, 'o', label=r'Trios')
-    plt.plot(ntu_HACH[IMGstation], T_IMG, 'o', label=r'IMG')
+    
+    plt.plot(ntu_HACH,T_Trios, 'o', color='seagreen', label=r'Trios')
+    
+    H = list(ntu_HACH[IMGstation])
+    for i in range(len(Algoritmos)):
+        plt.scatter(H[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
+    
+    
+    #plt.plot(ntu_HACH[IMGstation], T_IMG, 'o', label=r'IMG')
       
-    #plt.legend(loc=(1.04,0), fontsize=LegendSize)
+    plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'HACH (NTU)', fontsize=AxisLabelSize)
     plt.ylabel(r'Trios (NTU)', fontsize=AxisLabelSize)
