@@ -13,7 +13,7 @@ sys.path.append(path)
 
 TitleSize = 15
 AxisLabelSize = 15
-LegendSize = 8
+LegendSize = 10
 NumberSize = 12
 
 plt.close('all')
@@ -70,6 +70,7 @@ for Campaign in filenames.keys():
     dataHACH_Mean = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
     
     data_Trios_CV = pd.read_excel(path_Trios, sheet_name='TriosStats', skiprows=1)
+    data_Trios_Std = pd.read_excel(path_Trios, sheet_name='RhowStd', skiprows=1)
     dataECO_CV = pd.read_excel(pathECO ,sheet_name='Stations_CV',skiprows=1)
     dataOBS_CV = pd.read_excel(pathOBS ,sheet_name='Stations_CV',skiprows=1)
     dataHACH_CV = pd.read_excel(pathHACH ,sheet_name='turbidityHACH',skiprows=1)
@@ -88,11 +89,15 @@ for Campaign in filenames.keys():
     
     
     rho_Trios = {}
+    rho_Trios_err = {}
     rho_IMG = {}    
     #longitudes = [645, 859]
     
     rho_Trios[645] = data_Trios_Mean['645.0']
     rho_Trios[860] = data_Trios_Mean['860.0']
+    
+    rho_Trios_err[645] = data_Trios_Std['645.0']
+    rho_Trios_err[860] = data_Trios_Std['860.0']
     
     rho_IMG[645] = data_IMG_Mean[667]
     rho_IMG[860] = data_IMG_Mean[868]
@@ -105,12 +110,16 @@ for Campaign in filenames.keys():
     stations = range(len(ntu_ECO)) # Cantidad de estaciones.
     IMGstation = stations_IMG[Campaign]*np.ones(len(rho_IMG[645]))
 
-
     ############################################################
 
     def Algoritmo(stations, rho):
         T = np.empty(len(stations))
+        T_err = np.empty(len(stations))
         T.fill(np.nan)
+        T_err.fill(np.nan)
+        
+        markers = []
+        
         # Recorremos cada valor de rho[645]:
         for st in range(len(stations)):
             
@@ -119,10 +128,14 @@ for Campaign in filenames.keys():
             if r_645<0.05:
                 r = rho[645][st]
                 T[st] = (A[645]*r)/(1-r/C[645])
+                T_err[st] = ((A[645]*C[645]**2)/(C[645]-r)**2)*rho_Trios_err[645][st]
+                markers.append('+')
                 
             elif r_645>0.07:
                 r = rho[860][st]
                 T[st] = (A[860]*r)/(1-r/C[860])
+                T_err[st] = ((A[860]*C[860]**2)/(C[860]-r)**2)*rho_Trios_err[860][st]
+                markers.append('x')
                 
             elif 0.05<r_645<0.07:
                 # (Caso intermedio)
@@ -130,29 +143,35 @@ for Campaign in filenames.keys():
                 T_645 = (A[645]*rho[645][st])/(1-rho[645][st]/C[645])
                 T_860 = (A[860]*rho[860][st])/(1-rho[860][st]/C[860])
                 
+                T_645_err = ((A[645]*C[645]**2)/(C[645]-rho[645][st])**2)*rho_Trios_err[645][st]
+                T_860_err = ((A[860]*C[860]**2)/(C[860]-rho[860][st])**2)*rho_Trios_err[860][st]
+                
                 # Peso:
                 w = 50*r_645 - 2.5
                 T[st] = (1-w)*T_645 + w*T_860
+                T_err[st] = (1-w)*T_645_err + w*T_860_err
+                markers.append('o')
     
             else:
                 T[st] = None
-                continue
-        
-        return T
+                T_err[st] = None
+                markers.append(None)
+        return [T, T_err, markers]
+    
     
     # Turbidez usando el algoritmo:
-    T_Trios = Algoritmo(stations,rho_Trios)
-    T_IMG = Algoritmo(IMGstation,rho_IMG)
+    [T_Trios, T_Trios_err, Trios_markers] = Algoritmo(stations,rho_Trios)
+    [T_IMG, T_IMG_err, IMG_markers] = Algoritmo(IMGstation,rho_IMG)
 
 
-    # Antigua forma de calcular la turbidez (MAL):
+    # Antigua forma de calcular la turbidez:
 
-    #T_Trios_viejo = {}
-    #T_IMG_viejo = {}
+    T_Trios_viejo = {}
+    T_IMG_viejo = {}
     
-    #for l in longitudes:
-    #    T_Trios_viejo[l] = (A[l]*rho_Trios[l])/(1-rho_Trios[l]/C[l])
-    #    T_IMG_viejo[l] = (A[l]*rho_IMG[l])/(1-rho_IMG[l]/C[l])
+    for l in longitudes:
+        T_Trios_viejo[l] = (A[l]*rho_Trios[l])/(1-rho_Trios[l]/C[l])
+        T_IMG_viejo[l] = (A[l]*rho_IMG[l])/(1-rho_IMG[l]/C[l])
     
     ############################################################
     
@@ -167,6 +186,9 @@ for Campaign in filenames.keys():
     Filtrar(stations, T_Trios, CV_threshold)
     Filtrar(IMGstation, T_IMG, CV_threshold)
     
+    for l in longitudes:    
+        Filtrar(stations, T_Trios_viejo[l], CV_threshold)
+        #Filtrar(IMGstation, T_IMG_viejo[l], CV_threshold)
     ############################################################
     
     # Gráfico (turbidez - estaciones):
@@ -186,15 +208,24 @@ for Campaign in filenames.keys():
     IMG_shapes = ['o', 's', '^', '*', '+', 'x', '2']
     Algoritmos = ['GW94-SWIR12', 'GW94-SWIR13', 'GW94-SWIR23', 'PCA-SWIR12', 'PCA-SWIR13', 'PCA-SWIR23', 'PCA-SWIR123']
     
-    plt.plot(stations,T_Trios, '-o', color='seagreen', label=r'Trios')
+    estaciones = range(1,len(stations)+1) # Para los gráficos.
+    
+    plt.plot(estaciones,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
+    plt.plot(estaciones,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
+    plt.plot(estaciones,ntu_HACH, '-o', color='red', label=r'HACH')
+    
+    plt.errorbar(estaciones, T_Trios_viejo[645], yerr=T_Trios_err, color='springgreen', label=r'TriOS+D2015 ($\lambda = 645$)')
+    plt.errorbar(estaciones, T_Trios_viejo[860], yerr=T_Trios_err, color='forestgreen', label=r'TriOS+D2015 ($\lambda = 860$)')
+    
+    plt.errorbar(estaciones, T_Trios, yerr=T_Trios_err, color='gray', label=r'TriOS+D2015')
+
+    for st in stations:
+        plt.plot(estaciones[st], T_Trios[st], marker=Trios_markers[st], color='gray')
     
     # Sacamos los puntos de IMG del gráfico:
     #for i in range(len(Algoritmos)):
     #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
-    plt.plot(stations,ntu_ECO, '-o', color='orange', label=r'ECO FLNTU')
-    plt.plot(stations,ntu_OBS, '-o', color='blue', label=r'OBS501 (2016) [SS]')
-    plt.plot(stations,ntu_HACH, '-o', color='red', label=r'HACH')
     
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
@@ -213,9 +244,16 @@ for Campaign in filenames.keys():
     def lineal(x, a, b):
         return a*x+ b
     
-    parametros_iniciales = [1,0]
+    parametros_iniciales = [1,-10]
     
-    def Ajustar(x,y):    
+    def Ajustar(x,y):
+
+        # Eliminamos los nans:
+        x = x[np.logical_not(np.isnan(y))]
+        y = y[np.logical_not(np.isnan(y))]
+
+                
+        
         popt, pcov = curve_fit(lineal, x, y, p0=parametros_iniciales, check_finite=True)    
         
         pstd = np.sqrt(np.diag(pcov))
@@ -227,23 +265,37 @@ for Campaign in filenames.keys():
         
         return popt
 
+
     # Gráfico:
     fig = plt.figure()
     ax = fig.add_subplot()
 
     ax.set_aspect('equal')
-    
+    ax.set_ylim(0,70)
     x = np.linspace(0, 65, 10)
     
     plt.plot(x, x, '--k', label=r'$y=x$')
     
-    #[a, b] = Ajustar(ntu_HACH,T[l])
+    [a, b] = Ajustar(ntu_HACH,T_Trios)
     
-    plt.plot(ntu_HACH,T_Trios, 'o', color='seagreen', label=r'Trios')
+    # Gráfico de los ajustes:
+    plt.scatter(ntu_HACH,T_Trios, color='gray', label=r'TriOS+D2015')    
+    plt.scatter(ntu_HACH, T_Trios_viejo[645], color='springgreen', label=r'TriOS+D2015 ($\lambda = 645$ nm)')
+    plt.scatter(ntu_HACH, T_Trios_viejo[860], color='forestgreen', label=r'TriOS+D2015 ($\lambda = 860$ nm)')
+
+    # Gráfico de los ajustes:
+    [a, b] = Ajustar(ntu_HACH,T_Trios)
+    plt.plot(x,lineal(x, a, b), '-', color='gray', label=r'$%.2f x %.2f$'%(a,b))
     
-    H = list(ntu_HACH[IMGstation])
-    for i in range(len(Algoritmos)):
-        plt.scatter(H[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
+    [a, b] = Ajustar(ntu_HACH,T_Trios_viejo[645])
+    plt.plot(x,lineal(x, a, b), '-', color='springgreen', label=r'$%.2f x %.2f$'%(a,b))
+    
+    [a, b] = Ajustar(ntu_HACH,T_Trios_viejo[860])
+    plt.plot(x,lineal(x, a, b), '-', color='forestgreen', label=r'$%.2f x %.2f$'%(a,b))
+    
+    #H = list(ntu_HACH[IMGstation])
+    #for i in range(len(Algoritmos)):
+    #    plt.scatter(H[i],T_IMG[i], color='black', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
     
     #plt.plot(ntu_HACH[IMGstation], T_IMG, 'o', label=r'IMG')
