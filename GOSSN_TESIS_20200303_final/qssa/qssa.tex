@@ -1,0 +1,137 @@
+\chapter[Modelo de reflectancia qSSA]{Modelo de reflectancia basado en la Aproximación de Dispersión cuasi-Simple (qSSA)}
+\label{qssa}
+
+En este apéndice se describirá un modelo simple de reflectancia que se desarrolla bajo la Aproximación de Dispersión cuasi-Simple (\textit{quasi-Single Scattering Approximation}, qSSA, propuesta por primera vez dentro del área de óptica marina por Gordon 1973, \cite{gordon1973}). Previo a presentar la aproximación, definiremos algunas magnitudes ópticas fundamentales en óptica marina.
+
+\section{Coeficiente de absorción}
+\label{qssa:s:a}
+    
+    El coeficiente de absorción, $a(\lambda)$, se define como la tasa de disminución de la radiancia tras atravesar un espesor diferencial $dz$ de material absorbente, normalizada por la radiancia inicial, $L$, incidente en dirección $z$:
+    
+    \begin{equation}
+        a(\lambda)[m^{-1}] = -\frac{1}{L(\lambda)}\frac{dL(\lambda)}{dz}
+        \label{qssa:eq:a}
+    \end{equation}
+
+\section{Función de Dispersión en Volumen (VSF)}
+\label{qssa:s:vsf}
+
+    La Función de Dispersión en Volumen (\textit{Volume Scattering Function}, VSF), $\beta(\lambda,\Theta,\varphi)$, se define como la tasa de incremento de la radiancia en determinado diferencial $d\Omega$ de ángulo sólido tras atravesar un espesor $dz$ de material dispersor, normalizada por la radiancia inicial, $L$, incidente en dirección $z$:
+
+    \begin{equation}
+        \beta(\lambda,\Theta,\varphi)[m^{-1}sr^{-1}] = \frac{1}{L(\lambda)}\frac{d^{2}L(\lambda)}{dz\,d\Omega}
+        \label{qssa:eq:vsf}
+    \end{equation}
+
+    Nótese que se utilizaron los símbolos $\Theta$ y $\varphi$ en lugar de $\theta$ y $\phi$, para diferenciarlos de los ángulos cenital y acimutal utilizados en las definiciones de la \S \ref{int:s:geometricas}.
+
+\section{Coeficiente de dispersión}
+\label{qssa:s:b}
+    El coeficiente total de dispersión, $b(\lambda)$, se define como la tasa de incremento de la radiancia tras atravesar un espesor $dz$ de material dispersor, integrada en todas las direcciones, normalizada por la radiancia inicial, $L$, incidente en dirección $z$. Es equivalente a la integral de la VSF en todo el ángulo sólido:
+
+    \begin{equation}
+        b(\lambda)[m^{-1}] = 
+        \int d\Omega \beta(\lambda,\Theta,\varphi) =
+        \int_{0}^{2\pi} d\varphi \int_{0}^{\pi} d\Theta sin(\Theta) \beta(\lambda,\Theta,\varphi) 
+        \label{qssa:eq:b}
+    \end{equation}
+
+    En particular, en óptica marina es generalmente válido asumir simetría acimutal de la VSF, por lo que el coeficiente de dispersión resulta:
+
+    \begin{equation}
+        b(\lambda)[m^{-1}] = 
+        2\pi \int_{0}^{\pi} d\Theta sin(\Theta) \beta(\lambda,\Theta) 
+        \label{qssa:eq:b_simAcim}
+    \end{equation}
+
+\section{Coeficiente de retrodispersión}
+\label{qssa:s:bb}
+
+    El coeficiente de retrodispersión, $b_{b}(\lambda)$, es equivalente al de dispersión, pero únicamente teniendo en cuenta la fracción dispersada hacia el hemisferio anterior respecto a la dirección de incidencia, es decir, en el rango $\pi>\Theta>\pi/2$:
+
+    \begin{equation}
+        b_{b}(\lambda)[m^{-1}] = 
+        2\pi \int_{\pi/2}^{\pi} d\Theta sin(\Theta) \beta(\lambda,\Theta) 
+        \label{qssa:eq:bb}
+    \end{equation}
+
+\section{Coeficiente de atenuación}
+\label{qssa:s:c}
+
+El coeficiente de atenuación cuantifica la atenuación total ejercida por un medio sobre la REM incidente. Es decir, considera ambos efectos, absorción y dispersión, de forma tal que se define como:
+
+\begin{equation}
+    c(\lambda) = a(\lambda) + b(\lambda)
+    \label{qssa:eq:c}
+\end{equation}
+
+\section{Componentes ópticamente activas}
+\label{qssa:s:componentes}
+    
+    El modelo qSSA expresará la reflectancia en función de los coeficientes $a(\lambda)$ y $b_{b}(\lambda)$. A su vez, consideraremos expresar $a(\lambda)$ y $b_{b}(\lambda)$ como la suma de las componentes ópticamente activas presentes en el agua:
+    
+    \begin{equation}
+        a(\lambda) = a_{w}(\lambda) + \sum_{i=1}^{N} [C_{i}]a_{i}^{*}(\lambda)
+        \label{qssa:eq:a_componentes0}
+    \end{equation}
+    
+    \begin{equation}
+        b_{b}(\lambda) = b_{b,w}(\lambda) + \sum_{i=1}^{N} [C_{i}]b_{b,i}^{*}(\lambda)
+        \label{qssa:eq:bb_componentes0}
+    \end{equation}
+
+    \noindent donde los términos con subíndice $w$ corresponden al efecto absorbente/retrodispersivo del agua pura, \cite{kou1993}\cite{pope1997}\cite{smith1981} - cuyos espectros se hallan disponibles en el sitio web del OBPG de la NASA, \cite{obpg} - e \textit{i} representa cada una de las componentes ópticamente activas presentes en el agua. A su vez, los espectros de absorción y retrodispersión de dichas componentes están expresados como el producto de los espectros a una concentración específica (señalados con *) multiplicados por la concentración. En el modelo que utilizaremos - muy simple, por cierto - consideraremos espectros medios de las siguientes categorías de sustancias: material particulado (SPM), material orgánico disuelto coloreado (\textit{Coloured Dissolved Organic Matter}, CDOM, o \textit{gelbstoff}), clorofila-a (CHL) y ficocianina (PC), de forma tal que las Ecs. \ref{qssa:eq:a_componentes0} y \ref{qssa:eq:bb_componentes0} resultan:
+
+    \begin{equation}
+        a(\lambda) =
+        a_{w}(\lambda) + 
+        [CHL]a_{chl}^{*}(\lambda) + 
+        [PC]a_{pc}^{*}(\lambda) + 
+        [CDOM]a_{g}^{*}(\lambda) + 
+        [SPM]a_{p}^{*}(\lambda)
+        \label{qssa:eq:a_componentes}
+    \end{equation}
+    
+    \begin{equation}
+        b_(\lambda) =
+        b_{b,w}(\lambda) + 
+        [SPM]b_{b,p}^{*}(\lambda)
+        \label{qssa:eq:bb_componentes}
+    \end{equation}
+
+    \subsection{IOPs específicas del material particulado}
+    \label{qssa:s:iops_spm}
+    
+        Las formas espectrales de la IOPs de las partículas fueron tomadas de Babin et al. 2003a, \cite{babin2003a}, y 2003b, \cite{babin2003b}, basadas a su vez en los valores medios de regiones representativas de las aguas costeras del continente europeo.
+        %
+        Para la absorción específica del material particulado, una ley de decamiento exponencial fue utilizada: $a^{*}_{p}(\lambda [nm]) = a^{*}_{p}(443)exp\{-S_{ap}(\lambda - 443)\}$, donde $a^{*}_{p}(443) = 0.0410 m^{2}/g$ y $S_{ap} = 0.01230nm^{-1}$.
+        %
+        Por otro lado, la retrodispersión del material particulado se obtiene de asumir que corresponde al $2\%$ de la dispersión total (Mobley 1994, \cite{mobley1994}), $b_{bp} = 0.02 b_{p}$, y una ley de Angstrom para el coeficiente de atenuación ($b_{p} = c_{p} - a_{p}$): $c_{p}(\lambda [nm]) = (a_{p}(555) + b_{p}(555))(\frac{\lambda}{555})^{-\gamma_{c}}$, donde $b_{p}^{*}(555) = 0.51 m^{2}/g$ y $\gamma_{c} = 0.3749$.
+
+    \subsection{Absorción del CDOM}
+    \label{qssa:s:abs_cdom}
+
+        La absorción por \textit{gelbstoff} es razonablemente bien descrita poe el modelo de Bricaud et al. 1981, \cite{bricaud1981}: $a_{g}(\lambda[nm]) = [CDOM]e^{-0.014(\lambda-440)}$, donde en este caso la propiedad extensiva $[CDOM]$ es simplemente $a_{g}(400)$, dado que la determinación de la concentración másica de CDOM es difícil de realizar, precisamene porque el CDOM está definido como todo aquello que atraviesa los filtros de fibra de vidrio usualmente utilizados en el método gravimétrico, \S \ref{dat:s:spmMed}.
+
+    \subsection{Absorción de la clorofila-a y de la ficociancina}
+    \label{qssa:s:abs_pigmentos}
+    
+        Los espectros de absorción de la clorofila-a y de la ficociancina que utilizaremos en la tesis (ver Figuras \ref{dat:HyperASD} y \ref{dat:HyperTriOS}) corresponden a los que figuran en el Apéndice del trabajo de Simis y Kauko 2012 \cite{simis2012}.
+
+\section{Modelo de reflectancia}
+\label{qssa:s:qssa}
+
+    Asumiendo la aproximación qSSA, la relación entre la reflectancia y las IOPs viene dada por:
+
+    \begin{equation}
+        \rho_{w}(\lambda) = 
+        \frac{b_{b}(\lambda)}{a(\lambda) + b_{b}(\lambda)}
+        \label{qssa:eq:rhowmod0}
+    \end{equation}
+
+    \noindent donde $\gamma = \pi \Re f'/Q \approx 0.216$, es decir, habiendo considerado que $\Re = 0.529$ (cf. Loisel and Morel 2001, \cite{loisel2001}) y que el factor $f'/Q = 0.13$ (cf. Morel y Gentili 1996, \cite{morel1996}). Luego, reemplazando por las Ecs. \ref{qssa:eq:a_componentes0} y \ref{qssa:eq:bb_componentes0}, obtenemos la reflectancia en función de las concentraciones de las sustancias ópticamente activas:
+    
+    \begin{equation}
+        \rho_{w} = f([SPM],[CHL],[PC],[CDOM])
+        \label{qssa:eq:rhowmod}
+    \end{equation}
