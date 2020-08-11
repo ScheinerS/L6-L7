@@ -32,7 +32,7 @@ plt.rc('font', family='serif')
 
 #%%
 
-files = glob.glob(path + '/Datos/Pruebas 23-10-19/' + 'estación' + '*.csv') # Identifica la cantidad de archivos que se quieren leer.
+files = glob.glob(path + '/Pruebas 23-10-19/' + 'estación' + '*.csv') # Identifica la cantidad de archivos que se quieren leer.
 
 tabla = pd.DataFrame()  # DataFrame donde vamos a guardar los datos de hach, ntu y fl.
 
@@ -40,7 +40,7 @@ tabla = pd.DataFrame()  # DataFrame donde vamos a guardar los datos de hach, ntu
 
 #%%
 
-filename_hach = path + '/Datos/' + 'Turbidez(Hach-FLNTU) - Hoja 1.csv'
+filename_hach = path + '/Turbidez(Hach-FLNTU) - Hoja 1.csv'
 
 hach = pd.read_csv(filename_hach, delimiter = ",", skiprows=1, header=None)
 hach.set_index(0)
@@ -83,11 +83,12 @@ for file in files:
     fl_std = np.std(FL)/np.sqrt(len(FL))
     
     # Lo guardamos en la tabla definitiva:
-    tabla.set_value(station,'ntu', ntu_mean)
-    tabla.set_value(station,'ntu_err', ntu_std)
+    tabla.at[station, 'ntu'] = ntu_mean
+    tabla.at[station, 'ntu_err'] = ntu_std
 
-    tabla.set_value(station,'fl', fl_mean)
-    tabla.set_value(station,'fl_err', fl_std)
+    tabla.at[station, 'fl'] = fl_mean
+    tabla.at[station, 'fl_err'] = fl_std
+    
     
     #tabla['fl'] = np.mean(FL)
     #tabla['fl_err'] = np.std(FL)/np.sqrt(len(FL))
@@ -143,7 +144,7 @@ plt.plot(x, lineal(x, *popt), 'r-', label=r'Ajuste: $y = %.4f \; x $'%(popt[0]))
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'Correlaci\'on Hach-FLNTU', fontsize=TitleSize)
-plt.xlabel(r'Hach (NTU)', fontsize=AxisLabelSize)
+plt.xlabel(r'HACH (FNU)', fontsize=AxisLabelSize)
 plt.ylabel(r'ECO FLNTU (NTU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()

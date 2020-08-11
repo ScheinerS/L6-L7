@@ -264,7 +264,7 @@ for Campaign in filenames.keys():
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'Estación (STxx)', fontsize=AxisLabelSize)
-    plt.ylabel(r'Turbidez (NTU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
@@ -312,7 +312,7 @@ for Campaign in filenames.keys():
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'Estación (STxx)', fontsize=AxisLabelSize)
-    plt.ylabel(r'Turbidez (NTU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
@@ -360,7 +360,7 @@ for Campaign in filenames.keys():
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
     plt.xlabel(r'Estación (STxx)', fontsize=AxisLabelSize)
-    plt.ylabel(r'Turbidez (NTU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'Turbidez (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
@@ -432,8 +432,8 @@ for Campaign in filenames.keys():
       
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
-    plt.xlabel(r'HACH (NTU)', fontsize=AxisLabelSize)
-    plt.ylabel(r'TriOS (NTU)', fontsize=AxisLabelSize)
+    plt.xlabel(r'HACH (FNU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'TriOS (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
@@ -480,8 +480,8 @@ for Campaign in filenames.keys():
       
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
-    plt.xlabel(r'HACH (NTU)', fontsize=AxisLabelSize)
-    plt.ylabel(r'TriOS (NTU)', fontsize=AxisLabelSize)
+    plt.xlabel(r'HACH (FNU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'TriOS (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
@@ -528,8 +528,8 @@ for Campaign in filenames.keys():
       
     plt.legend(loc='best', fontsize=LegendSize)
     plt.title(r'%s'%Campaign, fontsize=TitleSize)
-    plt.xlabel(r'HACH (NTU)', fontsize=AxisLabelSize)
-    plt.ylabel(r'TriOS (NTU)', fontsize=AxisLabelSize)
+    plt.xlabel(r'HACH (FNU)', fontsize=AxisLabelSize)
+    plt.ylabel(r'TriOS (FNU)', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
     plt.show()
     
