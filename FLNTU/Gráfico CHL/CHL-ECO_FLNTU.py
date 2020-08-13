@@ -10,7 +10,7 @@ Datos sacados de: https://omlc.org/spectra/PhotochemCAD/html/123.html.
 import sys
 import os
 import matplotlib.pyplot as plt
-from matplotlib import rcParams, cycler
+#from matplotlib import rcParams, cycler
 #import csv
 #import numpy as np
 import pandas as pd
