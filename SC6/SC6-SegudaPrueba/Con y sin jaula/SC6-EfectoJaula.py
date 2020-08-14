@@ -15,7 +15,7 @@ sys.path.append(path)
 
 TitleSize=15
 AxisLabelSize=15
-LegendSize=10
+LegendSize=15
 NumberSize=10
 
 plt.close('all')
@@ -56,12 +56,18 @@ for i in range(6):
     signalCJ.append(data['LOG_0050'][SIG])  # con la jaula
     signalSJ.append(data['LOG_0051'][SIG])  # sin la jaula
     
+    meanCJ = np.mean(signalCJ[i])    
+    meanSJ = np.mean(signalSJ[i])
+    
+    stdCJ = np.std(signalCJ[i])    
+    stdSJ = np.std(signalSJ[i])
+    
     plt.figure()
-    plt.hist(signalSJ[i], label = 'Sin jaula', alpha = 0.8, bins=int(np.sqrt(len(signalSJ[i]))))
-    plt.hist(signalCJ[i], label = 'Con jaula',alpha = 0.8, bins=int(np.sqrt(len(signalCJ[i]))))
+    plt.hist(signalSJ[i], label = 'Sin estructura\n$\mu = %.2f$\n$\sigma = %.2f$'%(meanSJ, stdSJ), alpha = 0.8, bins=int(np.sqrt(len(signalSJ[i]))))
+    plt.hist(signalCJ[i], label = 'Con estructura\n$\mu = %.2f$\n$\sigma = %.2f$'%(meanCJ, stdCJ),alpha = 0.8, bins=int(np.sqrt(len(signalCJ[i]))))
     
     plt.legend(loc='best', fontsize=LegendSize)
-    plt.title(r'Efecto de la jaula (agua clara) [$\lambda$ = %s nm]'%(long[i]), fontsize=TitleSize)
+    plt.title(r'$\lambda$ = %s nm'%(long[i]), fontsize=TitleSize)
     plt.xlabel(r'Signal', fontsize=AxisLabelSize)
     plt.ylabel(r'', fontsize=AxisLabelSize)
     plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
