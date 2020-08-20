@@ -202,7 +202,7 @@ for Campaign in filenames.keys():
         T_Trios_VIIRS_viejo[l] = (A[l]*rho_Trios_VIIRS[l])/(1-rho_Trios_VIIRS[l]/C[l])
         
         T_IMG_viejo[l] = (A[l]*rho_IMG[l])/(1-rho_IMG[l]/C[l])
-    
+    #print(T_Trios_viejo)
     ############################################################
     
     # Filtramos los que tengan CV>CV_threshold:
@@ -535,3 +535,8 @@ for Campaign in filenames.keys():
     
     if Linux:
         plt.savefig(path + '/Algoritmo-IMG/' + '[%s] HACH_vs_Trios_VIIRS.png'%Campaign)
+
+
+
+
+
