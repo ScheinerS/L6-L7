@@ -4,11 +4,9 @@ import os
 import matplotlib.pyplot as plt
 #from matplotlib import rcParams, cycler
 #import csv
-import numpy as np
+#import numpy as np
 import pandas as pd
-from scipy.optimize import curve_fit
 
-#import Matchups as M
 
 path = os.path.dirname(os.path.realpath('__file__'))
 sys.path.append(path)
@@ -21,7 +19,7 @@ NumberSize = 15
 plt.close('all')
 
 plt.rc('text', usetex=True)
-#plt.rc('font', family='serif')
+plt.rc('font', family='serif')
 
 CV_threshold = 20
 
@@ -54,26 +52,38 @@ data_IMG['T_860'] = D2015(860, data_IMG[868])
 data_Trios['T_645'] = [23.005171, 28.917258]
 data_Trios['T_860'] = [49.025266, 51.199416]
 
+
+colores_algoritmos = {'GW94-SWIR12': 'blue',
+                      'GW94-SWIR13': 'red',
+                      'GW94-SWIR23': 'orange',
+                      'PCA-SWIR12': 'darkgreen',
+                      'PCA-SWIR13': 'purple',
+                      'PCA-SWIR23': 'brown',
+                      'PCA-SWIR123': 'gray'}
+
 #%%
 
 # 645 nm:
 
 plt.figure()
+for i in range(int(len(data_IMG)/2)):
+    plt.scatter(data_IMG['StationID'][i], data_IMG['T_645'][i], color=colores_algoritmos[data_IMG['Algoritmo'][i]])
 
-for i in range(len(data_IMG)):
-    plt.scatter(data_IMG['StationID'][i], data_IMG['T_645'][i], label=data_IMG['Algoritmo'][i])
+
+for i in range(int(len(data_IMG)/2),len(data_IMG)):
+    plt.scatter(data_IMG['StationID'][i], data_IMG['T_645'][i], label=data_IMG['Algoritmo'][i], color=colores_algoritmos[data_IMG['Algoritmo'][i]])
 
 #plt.scatter(data_IMG['StationID'], data_IMG['T_645'], label='IMG')
-plt.scatter(data_Trios['StationID'], data_Trios['T_645'], color='black', label='TriOS')
+plt.scatter(data_Trios['StationID'], data_Trios['T_645'], marker='+', color='black', label='TriOS')
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'645 nm', fontsize=TitleSize)
 plt.xlabel(r'Estación', fontsize=AxisLabelSize)
-plt.ylabel(r'D2015 (FNU)', fontsize=AxisLabelSize)
+plt.ylabel(r'T (FNU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
-plt.savefig('_645nm.png')
+plt.savefig('645nm.png')
 
 #%%
 
@@ -81,17 +91,21 @@ plt.savefig('_645nm.png')
 
 plt.figure()
 
-for i in range(len(data_IMG)):
-    plt.scatter(data_IMG['StationID'][i], data_IMG['T_860'][i], label=data_IMG['Algoritmo'][i])
+for i in range(int(len(data_IMG)/2)):
+    plt.scatter(data_IMG['StationID'][i], data_IMG['T_860'][i], color=colores_algoritmos[data_IMG['Algoritmo'][i]])
+
+
+for i in range(int(len(data_IMG)/2),len(data_IMG)):
+    plt.scatter(data_IMG['StationID'][i], data_IMG['T_860'][i], label=data_IMG['Algoritmo'][i], color=colores_algoritmos[data_IMG['Algoritmo'][i]])
 
 #plt.scatter(data_IMG['StationID'], data_IMG['T_860'], label='IMG')
-plt.scatter(data_Trios['StationID'], data_Trios['T_860'], color='black', label='TriOS')
+plt.scatter(data_Trios['StationID'], data_Trios['T_860'], marker='+', color='black', label='TriOS')
 
 plt.legend(loc='best', fontsize=LegendSize)
 plt.title(r'860 nm', fontsize=TitleSize)
 plt.xlabel(r'Estación', fontsize=AxisLabelSize)
-plt.ylabel(r'D2015 (FNU)', fontsize=AxisLabelSize)
+plt.ylabel(r'T (FNU)', fontsize=AxisLabelSize)
 plt.grid(axis='both', color='k', linestyle='dashed', linewidth=2, alpha=0.2)
 plt.show()
 
-plt.savefig('_860nm.png')
+plt.savefig('860nm.png')
