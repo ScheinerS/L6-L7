@@ -188,6 +188,7 @@ for Campaign in filenames.keys():
     [T_Trios_VIIRS, T_Trios_VIIRS_err, Trios_VIIRS_markers] = Algoritmo(stations,rho_Trios_VIIRS)
     
     [T_IMG, T_IMG_err, IMG_markers] = Algoritmo(IMGstation,rho_IMG)
+    
 
 
     # Antigua forma de calcular la turbidez:
@@ -202,7 +203,7 @@ for Campaign in filenames.keys():
         T_Trios_VIIRS_viejo[l] = (A[l]*rho_Trios_VIIRS[l])/(1-rho_Trios_VIIRS[l]/C[l])
         
         T_IMG_viejo[l] = (A[l]*rho_IMG[l])/(1-rho_IMG[l]/C[l])
-    #print(T_Trios_viejo)
+    print(T_Trios_viejo)
     ############################################################
     
     # Filtramos los que tengan CV>CV_threshold:
@@ -256,6 +257,9 @@ for Campaign in filenames.keys():
     for st in stations:
         plt.plot(estaciones[st], T_Trios[st], marker=Trios_markers[st], color='gray')
     
+    for i in range(len(Algoritmos)):
+        print('Algoritmo:', Algoritmos[i], '\tTurbidez:', T_IMG[i])
+    
     # Sacamos los puntos de IMG del gráfico:
     #for i in range(len(Algoritmos)):
     #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
@@ -302,11 +306,12 @@ for Campaign in filenames.keys():
     plt.errorbar(estaciones, T_Trios_MA, yerr=T_Trios_MA_err, color='gray', label=r'TriOS+D2015')
 
     for st in stations:
+        
         plt.plot(estaciones[st], T_Trios_MA[st], marker=Trios_markers[st], color='gray')
     
     # Sacamos los puntos de IMG del gráfico:
     #for i in range(len(Algoritmos)):
-    #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
+        #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
     
     plt.legend(loc='best', fontsize=LegendSize)
@@ -354,7 +359,7 @@ for Campaign in filenames.keys():
     
     # Sacamos los puntos de IMG del gráfico:
     #for i in range(len(Algoritmos)):
-    #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
+        #    plt.scatter(IMGstation[i],T_IMG[i], color='darkslategray', label=r'%s'%Algoritmos[i], marker=IMG_shapes[i])
     
     
     plt.legend(loc='best', fontsize=LegendSize)
