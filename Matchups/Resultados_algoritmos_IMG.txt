@@ -1,0 +1,23 @@
+=====================================================
+Campaña:         2019-12-10
+===========================
+Algoritmo: GW94-SWIR12  Turbidez: 32.76531599428054
+Algoritmo: GW94-SWIR13  Turbidez: 38.12430951599472
+Algoritmo: GW94-SWIR23  Turbidez: 50.887395527457734
+Algoritmo: PCA-SWIR12   Turbidez: 30.4215832058593
+Algoritmo: PCA-SWIR13   Turbidez: 22.88535989617605
+Algoritmo: PCA-SWIR23   Turbidez: 48.59414812075665
+Algoritmo: PCA-SWIR123  Turbidez: 37.621855899938005
+
+=====================================================
+Campaña:         2019-12-17
+===========================
+Algoritmo: GW94-SWIR12  Turbidez: 56.49256073281446
+Algoritmo: GW94-SWIR13  Turbidez: 37.136349777738154
+Algoritmo: GW94-SWIR23  Turbidez: 59.55831091906825
+Algoritmo: PCA-SWIR12   Turbidez: 48.269832269928685
+Algoritmo: PCA-SWIR13   Turbidez: 28.715882546507476
+Algoritmo: PCA-SWIR23   Turbidez: 37.79380353377436
+Algoritmo: PCA-SWIR123  Turbidez: 42.362060659217306
+
+=====================================================
